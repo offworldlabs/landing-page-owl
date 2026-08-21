@@ -132,7 +132,8 @@
     #hero { padding: calc(56px + 5.5rem) 0 4.5rem; }
     .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3.5rem; align-items: center; }
     .hero-visual svg { width: 100%; height: auto; }
-    .hero-scrollcue { margin-top: 2rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .hero-actions { margin-top: 2rem; }
+    .hero-scrollcue { margin-top: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
     .hero-scrollcue .label { color: var(--ink-3); }
 
     /* ── Module (interactive figure) ── */
@@ -293,8 +294,8 @@
       <li><a href="#doppler">Doppler</a></li>
       <li><a href="#delaydoppler">Delay-Doppler</a></li>
       <li><a href="#maxhold">Max hold</a></li>
-      <li><a href="#ambiguity">Range</a></li>
       <li><a href="#resolving">Triangulation</a></li>
+      <li><a href="#freeflight">Simulator</a></li>
       <li><a href="https://github.com/offworldlabs/owl-os/wiki/3-Understanding-Node-Data" target="_blank" rel="noopener">Wiki ↗</a></li>
     </ul>
     <a class="nav-cta" href="https://retina.fm/" target="_blank" rel="noopener">Get a node</a>
@@ -313,8 +314,11 @@
             TV towers already crowding the air around you, then reads the faint echoes that glance off
             anything flying overhead. Scroll on and try it: every idea here is yours to play with.
           </p>
+          <div class="hero-actions reveal">
+            <a class="btn btn-primary" href="#freeflight">Skip to the Flight Path Doppler Simulator →</a>
+          </div>
           <div class="hero-scrollcue reveal">
-            <span class="label">Scroll to begin</span>
+            <span class="label">Or scroll to begin</span>
             <span aria-hidden="true">↓</span>
           </div>
         </div>
@@ -375,10 +379,13 @@
         <span class="label eyebrow">01 — The idea</span>
         <h2>Two antennas, two paths, one difference.</h2>
         <p style="margin-top:1rem;">
-          A passive radar node has <strong>two ears</strong>. One points at a distant broadcast tower and
-          listens to its signal head-on. Call that the <em style="color:var(--reference)">reference</em>. The
-          other faces the open sky and catches the very same signal a beat later, after it has glanced off a
-          passing aircraft. Call that the <em style="color:var(--echo)">echo</em>. The echo always takes the
+          A passive radar node receives <strong>two signals</strong>. The
+          <strong style="color:var(--reference)">reference antenna</strong> points at a distant broadcast tower
+          and listens to its signal head-on: that's the
+          <em style="color:var(--reference)">reference signal</em>. The other antenna faces the open sky and
+          catches the very same signal a beat later, after it has glanced off a passing aircraft — the
+          <strong style="color:var(--echo)">surveillance antenna</strong> is used to pick up this echo, and what
+          it delivers is the <em style="color:var(--echo)">surveillance signal</em>. The echo always takes the
           long way round, and that extra stretch of travel is the aircraft's <strong>bistatic range</strong>.
         </p>
         <p>Grab the aircraft and move it around the sky. Watch the two paths stretch, and see how much farther
@@ -412,8 +419,9 @@
           <div class="aside">
             <span class="label">Why "bistatic"?</span>
             <p>The transmitter and the receiver sit in different spots (<em>bi-static</em>), where an ordinary
-            radar packs both into one dish. RETINA owns neither: it quietly borrows a tower that's already out
-            there broadcasting.</p>
+            radar packs both into one dish. You own the receiver — the node, its reference antenna and its
+            surveillance antenna are all yours. What you don't own is the transmitter: RETINA quietly borrows a
+            tower that's already out there broadcasting.</p>
           </div>
         </div>
       </div>
@@ -434,6 +442,10 @@
         </p>
         <p>Set a speed and send the aircraft past. Coming toward the node reads positive, heading away reads
           negative, and right at the closest point it passes through zero. Faster planes swing the shift wider.</p>
+        <p>The node isn't listening to the whole sky, though. The surveillance antenna only sees a
+          <strong>wedge</strong> of it, drawn here as the pale blue cone. Watch the aircraft enter and leave that
+          cone: outside it there is no echo to shift, no tone, no reading. The plane is still up there. The node
+          simply can't hear it.</p>
       </div>
 
       <div class="module reverse reveal">
@@ -443,6 +455,14 @@
             The shift is minuscule next to the carrier: a couple hundred hertz riding on top of, say, a
             200&nbsp;MHz FM signal. That's about one part in a million. Vanishingly small, and still more than
             enough to clock a plane's speed.
+          </p>
+          <p>
+            The two traces at the bottom of the scene are what the node's two antennas hold up against each
+            other. The <em style="color:var(--reference)">reference signal</em>, from the reference antenna, is
+            the tower's own broadcast arriving straight and unchanged. The
+            <em style="color:var(--echo)">surveillance signal</em>, from the surveillance antenna, is that same
+            broadcast after it has bounced off something moving. Squeezed together, the echo is closing;
+            stretched apart, it's opening away. The gap between the two numbers <em>is</em> the Doppler shift.
           </p>
           <div class="control" style="margin-bottom:1rem;">
             <label><span class="cname">Aircraft speed</span><span class="cval" id="dop-speed-v">220 m/s</span></label>
@@ -456,10 +476,15 @@
             <button class="toggle" id="dop-play" aria-pressed="false">▶ Send it past</button>
             <button class="toggle" id="dop-sound" aria-pressed="true" title="Play the pitch while it flies">🔊 Sound</button>
           </div>
+          <div class="legend">
+            <span class="li"><span class="sw line" style="background:var(--reference)"></span> Reference signal · reference antenna</span>
+            <span class="li"><span class="sw line" style="background:var(--echo)"></span> Surveillance signal · the shifted echo</span>
+            <span class="li"><span class="sw" style="background:var(--blue-dim); border:1px solid var(--blue)"></span> Surveillance antenna beam · 120°</span>
+          </div>
           <p class="hint">Set a speed, then send it past</p>
         </div>
         <div class="stage">
-          <svg id="dop-svg" viewBox="0 0 520 360" aria-label="Interactive Doppler effect. Move the source past the observer to see wavefronts compress and stretch."></svg>
+          <svg id="dop-svg" viewBox="0 0 520 400" aria-label="Interactive Doppler effect. A source flies past a node whose surveillance antenna sees a 120-degree wedge of sky; wavefronts compress and stretch, and two traces compare the reference signal against the shifted surveillance signal."></svg>
         </div>
       </div>
     </div>
@@ -474,12 +499,13 @@
         <p style="margin-top:1rem;">
           Now lay the two clues side by side. Distance comes from the delay; speed comes from the Doppler
           shift. Plot one against the other and you have the single most useful picture in passive radar: the
-          <strong>delay-Doppler plot</strong>. Left to right is Doppler (how fast the gap is closing); bottom to
-          top is range (how far off). A whole aircraft, in one frozen instant, lands as <strong>one dot</strong>.
+          <strong>delay-Doppler plot</strong>. Left to right is range (how far off); bottom to top is Doppler
+          (how fast the gap is closing). A whole aircraft, in one frozen instant, lands as <strong>one dot</strong>.
         </p>
-        <p>There are two things to play with here. Drag the <strong>plane</strong> to move it through the sky.
-          Drag the small round <strong>handle</strong> to swing its heading, the direction it's actually flying.
-          The dot on the right is what the node sees.</p>
+        <p><strong>Both things in the scene move.</strong> Grab the <strong>aircraft itself</strong> — the ringed
+          glyph — and drag it anywhere in the sky. Then grab the <strong>AIM</strong> ring on the end
+          of the arrow to swing its heading, the direction it's actually flying. Move one, then the other, and
+          watch the single dot below chase both.</p>
       </div>
 
       <div class="module reverse reveal">
@@ -490,22 +516,39 @@
             <div class="stat"><span class="k">Doppler</span><span class="v" id="dd-dop">– <small>Hz</small></span></div>
           </div>
           <p style="font-size:0.86rem; margin-top:1rem;">
-            One thing tends to surprise people. Aim the plane <em>straight along</em> the line of sight and the
-            Doppler leaps to the edge of the plot. Turn it <em>broadside</em>, flying across, and the shift
-            almost disappears, at the very same speed. The plot only cares how fast the distance is changing,
-            not how fast the plane is really moving.
+            One thing tends to surprise people. Aim the plane <em>straight along</em> a leg and the dot shoots to
+            the top or bottom of the plot. Turn it broadside and it settles back onto the middle line, at the
+            very same speed. The plot only cares how fast the total distance is changing, not how fast the plane
+            is really moving.
           </p>
+          <div class="aside">
+            <span class="label">Where 0 Hz actually is</span>
+            <p>Not perpendicular to the node — that's the answer for a normal radar, where the transmitter and
+            receiver share one dish. Here the signal travels <em>tower → plane → node</em>, so the Doppler
+            follows how fast <strong>both legs together</strong> are changing. It hits zero when the plane flies
+            perpendicular to the <span style="color:var(--bistatic)">bisector</span> of the two legs, which is
+            the same thing as flying <em>along</em> the equal-range ellipse. That's the
+            <span style="color:var(--dop-zero)">cyan line</span> in the scene: park the AIM knob on it and the
+            readout reads 0.</p>
+          </div>
+          <div class="toggle-row">
+            <button class="toggle" id="dd-snap">Snap heading to 0 Hz</button>
+          </div>
         </div>
         <div class="stage">
           <svg id="dd-svg" viewBox="0 0 520 232" aria-label="Interactive scene: drag the aircraft to move it, drag the round handle to aim its heading."></svg>
-          <p class="hint" style="margin:0.25rem 0 0.5rem;">Drag the plane to move · drag the ○ handle to aim</p>
+          <div class="legend" style="margin-top:0.5rem;">
+            <span class="li"><span class="sw line" style="background:var(--dop-zero)"></span> 0 Hz flight line · fly along this and the Doppler vanishes</span>
+            <span class="li"><span class="sw line" style="background:var(--bistatic)"></span> Bisector of the two legs</span>
+          </div>
+          <p class="hint" style="margin:0.25rem 0 0.5rem;">Two handles: drag the <b>aircraft</b> to move it · drag the <b>AIM</b> ring to turn it</p>
           <svg id="dd-plot" viewBox="0 0 520 232" aria-label="Delay-Doppler plot showing the current detection as a single point." style="border-top:1px solid var(--rule); padding-top:0.5rem;"></svg>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════ 4. MAX HOLD ══════════════════════════ -->
+  <!-- ══════════════════════════ 4. MAX HOLD + BEAM ══════════════════════════ -->
   <section id="maxhold" class="section-pad" style="background:var(--paper-2);">
     <div class="wrap">
       <div class="prose reveal">
@@ -514,9 +557,26 @@
         <p style="margin-top:1rem;">
           One dot is a single heartbeat. Keep a rolling trail of them, a view the node calls a
           <em>max hold</em>, and the aircraft signs its name. Up top you see the plane physically fly past;
-          below, in perfect step, is the track it leaves on the plot. It sweeps in from the top as the plane
-          approaches, dives to its closest point right as the Doppler crosses <strong>0 Hz</strong>, then peels
-          away again, painted in the same colors the live map uses for real echoes.
+          below, in perfect step, is the track it leaves on the plot. It sweeps in from far out as the plane
+          approaches, swings down through <strong>0&nbsp;Hz</strong> at the closest point, then opens away
+          again, painted in the same colors the live map uses for real echoes.
+        </p>
+        <p>
+          There's a catch the plot doesn't show you. A single range number isn't a <em>place</em>. It's a whole
+          <strong>curve of maybes</strong>. Every point in the sky that sends its echo back after exactly the
+          same delay lies on one <strong>ellipse</strong>, drawn with the tower and your node at its two focal
+          points, and a lone antenna cannot tell any of those points apart. (A dish radar, transmitting and
+          listening from the same spot, draws simple circles. Borrow someone else's transmitter and the circles
+          stretch into ellipses.)
+        </p>
+        <p>
+          What narrows it down is the antenna itself. A directional antenna only listens to a
+          <strong>wedge</strong> of sky, so the answer shrinks from a whole ellipse to the slice of it sitting
+          inside the beam. Drag the <strong style="color:var(--blue-strong)">AIM</strong> knob to point the
+          wedge and set how far it reaches; drag <strong style="color:var(--blue-strong)">WIDTH</strong> to open
+          or close it. It starts 120° across. Now steer it off the flight path and watch the plot below: the
+          track simply stops being drawn. No dots, no signature, no aircraft. As far as the node is concerned,
+          nothing flew past at all.
         </p>
       </div>
 
@@ -535,131 +595,146 @@
               <input type="range" id="mh-speed" min="80" max="300" value="220" step="5">
             </div>
             <div class="control">
-              <label><span class="cname">Closest approach</span><span class="cval" id="mh-miss-v">6 km</span></label>
-              <input type="range" id="mh-miss" min="1" max="22" value="6" step="1">
+              <label><span class="cname">Closest approach</span><span class="cval" id="mh-miss-v">10 km</span></label>
+              <input type="range" id="mh-miss" min="2" max="22" value="10" step="1">
             </div>
+          </div>
+          <div class="readout" style="border-top:none; padding-top:0;">
+            <div class="stat"><span class="k">Beam width</span><span class="v" id="mh-beam-v">120<small>°</small></span></div>
+            <div class="stat"><span class="k">Node</span><span class="v" id="mh-heard" style="font-size:1rem; align-self:center; font-family:var(--ff-mono)">listening</span></div>
           </div>
           <div class="toggle-row">
             <button class="toggle" id="mh-play" aria-pressed="true">❚❚ Pause</button>
             <button class="toggle" id="mh-clear">Clear trail</button>
+            <button class="toggle" id="mh-reset-beam">Reset beam</button>
           </div>
           <div class="legend">
             <span class="li"><span class="sw" style="background:var(--dop-approach)"></span> Approaching</span>
             <span class="li"><span class="sw" style="background:var(--dop-zero)"></span> Closest (0 Hz)</span>
             <span class="li"><span class="sw" style="background:var(--dop-recede)"></span> Receding</span>
+            <span class="li"><span class="sw" style="background:var(--blue-dim); border:1px solid var(--blue)"></span> Beam</span>
+          </div>
+          <div class="aside">
+            <span class="label">The trade you're making</span>
+            <p>Pinch the surveillance beam narrow and every echo it does pick up is pinned to a small arc of
+            sky, but the antenna is blind to everything either side of it. Open it wide and it covers far more
+            sky, at the cost of knowing less about where any of it is. Real nodes live somewhere in the middle,
+            and lean on the tricks in the next section to make up the difference.</p>
           </div>
         </div>
         <div class="stage">
-          <svg id="mh-scene" viewBox="0 0 520 150" aria-label="Top-down view of the aircraft flying past the node, in sync with the track below." style="border-bottom:1px solid var(--rule); margin-bottom:0.5rem;"></svg>
+          <svg id="mh-scene" viewBox="0 0 520 250" aria-label="Top-down view of the aircraft flying past the node, with a steerable antenna beam. The aircraft is only detected while it is inside the beam." style="border-bottom:1px solid var(--rule); margin-bottom:0.5rem;"></svg>
+          <p class="hint" style="margin:0 0 0.6rem;">Drag the beam's <b>AIM</b> and <b>WIDTH</b> knobs — the plot only draws what the beam can hear</p>
           <svg id="mh-plot" viewBox="0 0 520 360" aria-label="Max-hold delay-Doppler plot with a simulated fly-by tracing a curve."></svg>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════ 5. RANGE AMBIGUITY ══════════════════════════ -->
-  <section id="ambiguity" class="section-pad">
-    <div class="wrap">
-      <div class="prose reveal">
-        <span class="label eyebrow">05 — What one node can't tell you</span>
-        <h2>One range, a whole curve of maybes.</h2>
-        <p style="margin-top:1rem;">
-          Range tells you how far. It says nothing about which way. Measure 15&nbsp;km and the aircraft could be
-          anywhere along a curve of equal-distance points wrapped around you. That curve isn't a circle, though.
-          Because the tower and the node sit apart, every point with the same echo-time traces an
-          <strong>ellipse</strong>, with the tower and your node sitting at its two focal points.
-        </p>
-        <p>A single ear can't choose between the points on that ellipse. A directional antenna helps: it only
-          listens to a wedge of sky, shrinking the answer to the slice of ellipse inside the beam. Steer the
-          beam onto the plane and it lights up.</p>
-      </div>
-
-      <div class="module reveal">
-        <div class="stage">
-          <svg id="amb-svg" viewBox="0 0 520 400" aria-label="Range ambiguity: the aircraft lies somewhere on an ellipse with the tower and node at its foci; a directional beam narrows it to an arc, and the plane glows when it falls inside the beam."></svg>
-          <div class="legend">
-            <span class="li"><span class="sw line" style="background:var(--blue)"></span> Illumination · tower → plane</span>
-            <span class="li"><span class="sw line" style="background:var(--echo)"></span> Echo · plane → node</span>
-            <span class="li"><span class="sw line" style="background:var(--reference)"></span> Baseline · tower → node</span>
-            <span class="li"><span class="sw line" style="background:var(--bistatic)"></span> Bistatic range · ellipse</span>
-            <span class="li"><span class="sw" style="background:var(--truth); border-radius:50%;"></span> Detected in beam</span>
-          </div>
-          <p class="hint">Drag the plane · drag the beam's AIM and WIDTH knobs</p>
-        </div>
-        <div class="module-copy">
-          <h3>Steer the beam</h3>
-          <p>
-            What the node measures is <strong>bistatic range</strong>: the full trip, the
-            <span style="color:var(--blue)">blue leg</span> plus the <span style="color:var(--echo)">amber
-            leg</span>, minus the <span style="color:var(--reference)">green baseline</span>. Hold that total
-            fixed and the aircraft could sit anywhere on the <span style="color:var(--bistatic)">grey
-            ellipse</span>. Drag the plane anywhere and the ellipse redraws through it, tracing every other
-            point the node can't tell it apart from. That's the ambiguity: one number, a whole curve of maybes.
-            A directional antenna narrows it to a wedge of sky with a limited reach. Drag the beam's
-            <span style="color:var(--blue-strong)">aim</span> and
-            <span style="color:var(--blue-strong)">width</span> knobs over the plane until it
-            <em style="color:var(--truth)">glows</em>.
-          </p>
-          <div class="aside">
-            <span class="label">Why an ellipse?</span>
-            <p>Add up the echo's two legs, tower to plane (blue) plus plane to node (amber), and hold that total
-            fixed. The set of points that satisfy it is the very definition of an ellipse, with the tower and
-            node as its two foci. A lone dish radar draws circles; a borrowed-transmitter radar draws ellipses.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════ 6. RESOLVING ══════════════════════════ -->
+  <!-- ══════════════════════════ 5. RESOLVING ══════════════════════════ -->
   <section id="resolving" class="section-pad" style="background:var(--paper-2);">
     <div class="wrap">
       <div class="prose reveal">
-        <span class="label eyebrow">06 — Pinning it down</span>
-        <h2>Three ways to break the ambiguity.</h2>
+        <span class="label eyebrow">05 — Pinning it down</span>
+        <h2>One measurement, a whole arc of places.</h2>
         <p style="margin-top:1rem;">
-          One node and one tower still leave you with that ellipse of doubt. RETINA shrinks it to a single
-          point three ways: by matching against aircraft that announce themselves, by teaming up two nodes,
-          and soon by listening to several towers at once.
+          Knowing roughly <em>where the beam is looking</em> is the easy half: the antenna's sensitivity falls
+          away smoothly off boresight, so comparing how strong the same echo looks from moment to moment gives
+          you a likely bearing with an error bar. The hard half is what happens <em>inside</em> the cone. Take
+          the equal-range ellipse and keep only the part the beam can see, and you're left with an
+          <strong>arc</strong> — a continuous curve across the cone, not a pair of alternatives. Every point on
+          it is the same distance as far as the node is concerned, and for each one there's a heading that
+          reproduces your measured Doppler exactly. Same range, same hertz, hundreds of different places.
+        </p>
+        <p>
+          Start on <strong>The problem</strong> below, then lay each of the three fixes over that same picture
+          and watch the arc collapse to a single confirmed aircraft.
         </p>
       </div>
 
       <div class="reveal" style="margin-top:2.5rem;">
         <div class="tabs" role="tablist">
-          <button class="tab" role="tab" aria-selected="true" data-tab="adsb">ADS-B truth</button>
+          <button class="tab" role="tab" aria-selected="true" data-tab="problem">The problem</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="adsb">ADS-B truth</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="tri">Two-node triangulation</button>
-          <button class="tab" role="tab" aria-selected="false" data-tab="multi">Multi-tower (soon)</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="multi">Two-Tower Triangulation</button>
+        </div>
+
+        <!-- The problem -->
+        <div class="tabpanel active" id="tab-problem">
+          <div class="module">
+            <div class="stage">
+              <svg id="amb-svg" viewBox="0 0 520 400" aria-label="Plan view: the equal-range ellipse, the arc of it that falls inside the surveillance beam, and five candidate aircraft positions along that arc that all produce the same measurement."></svg>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--bistatic)"></span> Equal-range ellipse · the arc inside the beam</span>
+                <span class="li"><span class="sw" style="background:var(--blue-dim); border:1px solid var(--blue)"></span> Surveillance beam</span>
+                <span class="li"><span class="sw" style="border:2px solid var(--ink-3); border-radius:50%; background:transparent;"></span> A candidate that fits equally well</span>
+              </div>
+              <p class="hint" style="margin:0.5rem 0;">Drag the aircraft along the arc · drag <b>AIM</b> to change its heading</p>
+              <svg id="amb-plot" viewBox="0 0 520 160" aria-label="Delay-Doppler plot: every candidate lands on the same single dot." style="border-top:1px solid var(--rule); padding-top:0.5rem;"></svg>
+            </div>
+            <div class="module-copy">
+              <h3>Every one of them fits</h3>
+              <p>
+                The five faint aircraft are drawn out of a continuous arc — they aren't special cases, the whole
+                curve is candidates. Each carries its own heading, worked out so its Doppler comes out identical
+                to the real one's. The node isn't choosing badly between them; it has no information that
+                separates them.
+              </p>
+              <div class="readout" style="border-top:none; padding-top:0;">
+                <div class="stat"><span class="k">Range · all</span><span class="v" id="amb-range">– <small>km</small></span></div>
+                <div class="stat"><span class="k">Doppler · all</span><span class="v" id="amb-dop">– <small>Hz</small></span></div>
+              </div>
+              <p style="font-size:0.86rem; margin-top:1rem;" id="amb-caption">
+                One detection. One dot. An arc of places it could have come from.
+              </p>
+              <div class="aside">
+                <span class="label">And that's only the flat version</span>
+                <p>Drawn from above, the answer is an arc. In three dimensions the ellipse is an ellipsoid and
+                the arc becomes a whole <em>surface</em> of positions and headings, all landing on the same
+                range and the same hertz.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ADS-B panel -->
-        <div class="tabpanel active" id="tab-adsb">
+        <div class="tabpanel" id="tab-adsb">
           <div class="module">
             <div class="stage">
-              <svg id="adsb-plot" viewBox="0 0 520 360" aria-label="Delay-Doppler plot with detections; known ADS-B aircraft can be subtracted to leave anomalies."></svg>
+              <svg id="adsb-map" viewBox="0 0 520 400" aria-label="The same arc of candidates, with the ADS-B feed laid over it: only one candidate position has an aircraft reporting from it."></svg>
+              <p class="hint" style="margin:0.5rem 0;">Drag the aircraft — the ADS-B feed stays laid over the arc</p>
+              <svg id="adsb-plot" viewBox="0 0 520 360" aria-label="Delay-Doppler plot: every ADS-B aircraft projected onto the range-Doppler plane, whether or not the beam is hearing it, alongside the one detection nothing predicts." style="border-top:1px solid var(--rule); padding-top:0.5rem;"></svg>
               <div class="legend">
-                <span class="li"><span class="sw" style="background:var(--truth); border-radius:50%;"></span> Matches an ADS-B aircraft</span>
-                <span class="li"><span class="sw" style="background:var(--echo); border-radius:50%;"></span> Unexplained detection</span>
+                <span class="li"><span class="sw" style="background:var(--truth); border-radius:50%;"></span> Detected, and matches an ADS-B aircraft</span>
+                <span class="li"><span class="sw" style="border:2px dashed var(--truth); border-radius:50%; background:transparent;"></span> ADS-B says it's there, beam can't hear it</span>
+                <span class="li"><span class="sw" style="background:var(--echo); border-radius:50%;"></span> Detected, nothing predicts it</span>
               </div>
             </div>
             <div class="module-copy">
               <h3>Subtract what you already know</h3>
               <p>
-                Most aircraft are chatty. Their transponders announce exactly where they are, on a public feed
-                called <strong>ADS-B</strong>. RETINA lays that honest list of planes over its own detections.
-                Every echo that matches a known aircraft is confirmed and set aside. Whatever is left has some
-                explaining to do.
+                Most aircraft are chatty: their transponders announce exactly where they are, on a public feed
+                called <strong>ADS-B</strong>. Laid over the map, most of what the node hears turns out to be
+                traffic that was never in contention — crossed off because it sits outside the beam altogether.
+                Of the candidates left on the arc, one has a transponder reporting from it. That's your
+                detection, confirmed and named.
               </p>
-              <div class="toggle-row">
-                <button class="toggle cta" id="adsb-sub" aria-pressed="false">Subtract known aircraft →</button>
-              </div>
-              <p style="font-size:0.86rem; margin-top:1rem;" id="adsb-caption">
-                Six detections, five of them matched to transponder-equipped aircraft.
+              <p style="font-size:0.86rem;">
+                Every ADS-B report converts straight into the range and Doppler it <em>would</em> produce, so the
+                whole feed gets drawn on the plot <strong>whether or not the node is hearing that aircraft</strong>.
+                The hollow dashed markers are predictions with no echo behind them, because the beam isn't
+                pointed at them. That's the normal working picture, and it makes the test simple: anything the
+                node <em>does</em> hear that doesn't land on a predicted spot has some explaining to do.
+              </p>
+              <p style="font-size:0.86rem;" id="adsb-caption">
+                Four of the six detections belong to aircraft outside the beam entirely.
               </p>
               <div class="aside">
                 <span class="label">Not everything squawks</span>
-                <p>ADS-B isn't the whole story. Plenty of military and older aircraft stay silent. An echo with
-                no ADS-B twin isn't proof of anything strange, but it's the exact thing a passive radar exists
-                to catch: whatever chooses not to announce itself.</p>
+                <p>Plenty of military and older aircraft stay silent. An echo with no ADS-B twin isn't proof of
+                anything strange, but it's the exact thing a passive radar exists to catch: whatever chooses not
+                to announce itself.</p>
               </div>
             </div>
           </div>
@@ -669,48 +744,153 @@
         <div class="tabpanel" id="tab-tri">
           <div class="module">
             <div class="stage">
-              <svg id="tri-svg" viewBox="0 0 520 400" aria-label="Two nodes, each with a range ring; the rings intersect at two candidate points, one real and one ghost."></svg>
-              <p class="hint">Drag the aircraft and watch both nodes' range rings</p>
+              <svg id="tri-map" viewBox="0 0 520 400" aria-label="The same arc of candidates with a second node's equal-range ellipse and surveillance beam laid over it, crossing the arc at the true aircraft."></svg>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--bistatic)"></span> Node A · arc of candidates</span>
+                <span class="li"><span class="sw line" style="background:var(--dop-approach)"></span> Node B · its own equal-range ellipse</span>
+                <span class="li"><span class="sw" style="background:rgba(30,58,138,0.12); border:1px solid var(--dop-approach)"></span> Node B · its surveillance beam</span>
+                <span class="li"><span class="sw line" style="background:var(--reference)"></span> Direct baseline · tower → each node</span>
+                <span class="li"><span class="sw" style="border:2px solid var(--truth); border-radius:50%; background:transparent;"></span> Where they cross · the aircraft</span>
+              </div>
+              <p class="hint" style="margin:0.5rem 0;">Drag the aircraft — node B's ellipse follows and keeps crossing the arc on it</p>
+              <svg id="tri-plot" viewBox="0 0 520 180" aria-label="Range and Doppler as measured by node A and by node B for the same aircraft." style="border-top:1px solid var(--rule); padding-top:0.5rem;"></svg>
             </div>
             <div class="module-copy">
-              <h3>Two rings, two crossings</h3>
+              <h3>A second node cuts the arc</h3>
               <p>
-                Bring in a second node, on your roof or a neighbor's place a mile down the road. Now the plane
-                has to sit on <em>both</em> nodes' range rings at once, and two rings only cross in a couple of
-                spots. One crossing is the real aircraft. The other is a <strong>mirror-image ghost</strong>.
+                A second node, on your roof or a neighbour's place down the road, hears the same aircraft off the
+                same tower and produces its own equal-range ellipse — drawn around <em>its</em> position, tilted
+                differently. Your arc and node B's ellipse only agree where they cross. Node B has a surveillance
+                antenna of its own too, shown in <span style="color:var(--dop-approach)">its own colour</span>,
+                swung onto the aircraft from a completely different angle.
               </p>
               <div class="readout" id="tri-readout">
                 <div class="stat"><span class="k">Node A range</span><span class="v" id="tri-ra">– <small>km</small></span></div>
                 <div class="stat"><span class="k">Node B range</span><span class="v" id="tri-rb">– <small>km</small></span></div>
               </div>
-              <p style="font-size:0.86rem; margin-top:1rem;">
-                That last coin-flip gets settled with a scrap more information: which way the antennas point, or
-                a reading from a third node. What's left is a single dot on the map. That's how a scattering of
-                ears turns "how far" into "exactly where".
+              <p style="font-size:0.86rem; margin-top:1rem;" id="tri-caption">
+                One crossing, one aircraft.
               </p>
+              <p style="font-size:0.86rem;">
+                On the plot, that one aircraft shows up as <strong>two dots</strong>. Node B sits somewhere else,
+                so its path lengths and its closing rate are both different — same plane, different range, different
+                hertz. Neither dot alone says where it is. The pair does.
+              </p>
+              <div class="aside">
+                <span class="label">When two curves cross twice</span>
+                <p>Loci this shape can meet in more than one place, and when they do you get a real aircraft and
+                a <strong>mirror-image ghost</strong> that fits both measurements just as well. That coin-flip
+                gets settled with a scrap more information: which way the antennas point, or a third node. Drag
+                the aircraft around and you'll find positions where a ghost appears.</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Multi-tower panel -->
+        <!-- Two-tower panel -->
         <div class="tabpanel" id="tab-multi">
           <div class="module">
             <div class="stage">
-              <svg id="multi-svg" viewBox="0 0 520 360" aria-label="Planned method: one node using reflections from several towers at once."></svg>
+              <svg id="multi-map" viewBox="0 0 520 400" aria-label="The same arc of candidates with a second tower's equal-range ellipse laid over it, crossing the arc at the true aircraft."></svg>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--bistatic)"></span> Tower 1 · 97.9 MHz · arc of candidates</span>
+                <span class="li"><span class="sw line" style="background:var(--dop-recede)"></span> Tower 2 · 104.5 MHz · its own ellipse</span>
+                <span class="li"><span class="sw line" style="background:var(--reference)"></span> Direct baseline · each tower → node</span>
+                <span class="li"><span class="sw" style="border:2px solid var(--truth); border-radius:50%; background:transparent;"></span> Where they cross · the aircraft</span>
+              </div>
+              <p class="hint" style="margin:0.5rem 0;">Drag the aircraft — the second tower's ellipse follows and keeps crossing the arc on it</p>
+              <svg id="multi-plot" viewBox="0 0 520 180" aria-label="Range and Doppler for the same aircraft measured off the 97.9 MHz tower and off the 104.5 MHz tower." style="border-top:1px solid var(--rule); padding-top:0.5rem;"></svg>
             </div>
             <div class="module-copy">
-              <h3>One node, many towers</h3>
+              <h3>Two towers, one node</h3>
               <p>
-                The next trick drops the second node entirely. A single surveillance antenna can hear the
-                echoes of <em>several</em> towers at the same time. Each tower draws its own ellipse of maybes,
-                and where all of them overlap, there's the plane.
+                This one drops the second node entirely. A single surveillance antenna can hear the echoes of
+                <em>two</em> towers at once, and the reason that works is that they broadcast on
+                <strong>different frequencies</strong>: tune to 97.9 and you get one tower's echo, tune to 104.5
+                and you get the other's, out of the very same slice of recorded radio.
               </p>
-              <span class="toggle" style="cursor:default;" aria-disabled="true">On the roadmap</span>
+              <p>
+                Two towers means two independent bistatic ranges, so a second ellipse — this one drawn around
+                the second tower and your node. It cuts across your arc at a steep angle, and the crossing is
+                the aircraft. One node, one surveillance antenna, a fix.
+              </p>
+              <div class="readout" id="multi-readout">
+                <div class="stat"><span class="k">Range · 97.9</span><span class="v" id="multi-r1">– <small>km</small></span></div>
+                <div class="stat"><span class="k">Range · 104.5</span><span class="v" id="multi-r2" style="color:var(--dop-recede)">– <small>km</small></span></div>
+              </div>
+              <p style="font-size:0.86rem;">
+                On the plot, the same aircraft lands on <strong>two dots</strong> — one per frequency. The node
+                never moved; the geometry to each tower is different, so each tune produces its own range and its
+                own hertz out of the same recording.
+              </p>
+              <span class="toggle" style="cursor:default; margin-top:1rem; display:inline-block;" aria-disabled="true">On the roadmap</span>
               <p style="font-size:0.86rem; margin-top:1rem;">
-                It isn't shipping yet, but it's the tidiest route to a one-node fix. Watch the releases.
+                It isn't shipping yet, but it's the tidiest route to a one-node fix: no neighbour required, no
+                second box on a roof. Watch the releases.
               </p>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ══════════════════════════ 6. FREE FLIGHT ══════════════════════════ -->
+  <section id="freeflight" class="section-pad">
+    <div class="wrap">
+      <div class="prose reveal">
+        <span class="label eyebrow">06 — Your turn</span>
+        <h2>The Flight Path Doppler Simulator.</h2>
+        <p style="margin-top:1rem;">
+          Everything so far has been on rails: a straight pass, a fixed speed, a signature that always comes out
+          the same shape. This one is yours. <strong>Draw a flight path anywhere on the map</strong> — a straight
+          run, a wide turn, a loop, an approach that hooks in and doubles back — then press play and watch the
+          delay-Doppler plot below write out whatever that path sounds like to the node.
+        </p>
+        <p>
+          The beam is live here too. Steer it with the <strong style="color:var(--blue-strong)">AIM</strong> and
+          <strong style="color:var(--blue-strong)">WIDTH</strong> knobs and the track breaks into fragments: the
+          plot draws only the stretches your antenna could actually hear, exactly as a real node would record
+          them. Try flying a long straight line through a narrow beam and see how little of the story survives.
+        </p>
+      </div>
+
+      <div class="module reverse reveal">
+        <div class="module-copy">
+          <h3>Read your own track</h3>
+          <p>
+            A few things to try. Fly <em>straight at the node</em> and the track pins itself to the top of the
+            plot and slides left as the range shrinks. Fly a <em>circle around it</em> and the range barely moves
+            while the Doppler swings from one extreme to the other. Fly <em>across</em> the beam and you'll get a
+            short, nearly flat smear near 0&nbsp;Hz — fast aircraft, almost no Doppler, which is exactly the case
+            that fools people.
+          </p>
+          <div class="controls">
+            <div class="control">
+              <label><span class="cname">Speed</span><span class="cval" id="ff-speed-v">220 m/s</span></label>
+              <input type="range" id="ff-speed" min="80" max="320" value="220" step="5">
+            </div>
+          </div>
+          <div class="readout" style="border-top:none; padding-top:0;">
+            <div class="stat"><span class="k">Range</span><span class="v" id="ff-range">– <small>km</small></span></div>
+            <div class="stat"><span class="k">Doppler</span><span class="v" id="ff-dop">– <small>Hz</small></span></div>
+            <div class="stat"><span class="k">Node</span><span class="v" id="ff-heard" style="font-size:1rem; align-self:center; font-family:var(--ff-mono)">listening</span></div>
+          </div>
+          <div class="toggle-row">
+            <button class="toggle cta" id="ff-play" aria-pressed="true">❚❚ Pause</button>
+            <button class="toggle" id="ff-clear">Clear path</button>
+            <button class="toggle" id="ff-reset-beam">Reset beam</button>
+          </div>
+          <div class="legend">
+            <span class="li"><span class="sw" style="background:var(--dop-approach)"></span> Approaching</span>
+            <span class="li"><span class="sw" style="background:var(--dop-zero)"></span> 0 Hz</span>
+            <span class="li"><span class="sw" style="background:var(--dop-recede)"></span> Receding</span>
+            <span class="li"><span class="sw" style="background:var(--blue-dim); border:1px solid var(--blue)"></span> Beam</span>
+          </div>
+        </div>
+        <div class="stage">
+          <svg id="ff-map" viewBox="0 0 520 300" aria-label="Draw a flight path on the map. The aircraft flies your path on a loop while a steerable beam decides what the node can hear." style="border-bottom:1px solid var(--rule); margin-bottom:0.5rem;"></svg>
+          <p class="hint" style="margin:0 0 0.6rem;">Drag anywhere on the map to draw a new path · drag <b>AIM</b> / <b>WIDTH</b> to steer the beam</p>
+          <svg id="ff-plot" viewBox="0 0 520 300" aria-label="Delay-Doppler plot tracing the drawn flight path, broken wherever the aircraft leaves the beam."></svg>
         </div>
       </div>
     </div>
@@ -721,7 +901,7 @@
     <div class="wrap">
       <div class="prose reveal">
         <span class="label eyebrow">The bigger picture</span>
-        <h2>Every node adds an ear to the network.</h2>
+        <h2>Every node adds an antenna to the network.</h2>
         <p style="margin-top:1rem;">
           Alone, a single node reads distance and speed from radio it never paid for. Scatter dozens across a
           region and the guesswork collapses into clean tracks: a living, open map of the sky, stitched
@@ -732,7 +912,7 @@
       <div class="cta-card reveal">
         <div>
           <h3 style="margin-bottom:0.4rem;">Want to run one?</h3>
-          <p style="font-size:0.9rem; margin:0;">A RETINA node is a Raspberry Pi, a software-defined radio and an antenna. Add your ear to the map.</p>
+          <p style="font-size:0.9rem; margin:0;">A RETINA node is a Raspberry Pi, a software-defined radio and a pair of antennas. Add yours to the map.</p>
         </div>
         <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
           <a class="btn btn-primary" href="https://retina.fm/" target="_blank" rel="noopener">Get a node</a>
@@ -810,6 +990,66 @@
     window.addEventListener('pointerup', ()=>{ active=false; });
   }
 
+  /* ── bearing helpers (0° = up / north, increasing clockwise) ── */
+  const uOf=deg=>{const r=deg*Math.PI/180; return {x:Math.sin(r), y:-Math.cos(r)};};
+  const compass=v=>(Math.atan2(v.x,-v.y)*180/Math.PI+360)%360;
+  const angDiff=(x,y)=>Math.abs(((x-y)%360+540)%360-180);
+  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+
+  /* ── steerable beam ───────────────────────────────────────────────────────
+     A directional antenna drawn as a wedge springing from a node, with two
+     draggable knobs: AIM (sets bearing *and* reach) and WIDTH (sets the
+     angular width). Shared by the max-hold, ambiguity and free-flight demos so
+     the beam behaves identically everywhere it appears.
+       makeBeam(svg, NODE, {bearing, beam, reach, onChange})
+     → { bearing, beam, reach, inBeam(p), render() }                        */
+  function makeBeam(svg, NODE, opts={}){
+    const B={
+      bearing: opts.bearing ?? 0,
+      beam:    opts.beam    ?? 120,     // total angular width, degrees
+      reach:   opts.reach   ?? 150,
+      minReach:opts.minReach?? 45,
+      maxReach:opts.maxReach?? 260,
+      minBeam: opts.minBeam ?? 15,
+      maxBeam: opts.maxBeam ?? 170
+    };
+    // opts.bg / opts.fg let a caller sandwich other artwork between the wedge and its knobs,
+    // so the wedge sits behind the scene while the knobs stay grabbable on top of it
+    const BG=opts.bg||svg, FG=opts.fg||svg;
+    const wedge=el('path',{fill:'var(--blue-dim)',stroke:'var(--blue)','stroke-width':1,'stroke-opacity':0.4,'pointer-events':'none'},BG);
+    const axis=el('line',{stroke:'var(--blue)','stroke-width':1,'stroke-dasharray':'3 4',opacity:0.5,'pointer-events':'none'},BG);
+    function knob(label){
+      const g=el('g',{},FG);
+      el('circle',{r:13,fill:'none',stroke:'var(--blue)','stroke-width':1.2,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},g);
+      el('circle',{r:17,opacity:0.001,fill:'var(--blue)'},g);
+      el('circle',{r:6,fill:'var(--blue)',stroke:'var(--surface)','stroke-width':2},g);
+      el('text',{x:0,y:-14,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},g).textContent=label;
+      return g;
+    }
+    const aimK=knob('AIM'), widthK=knob('WIDTH');
+    B.inBeam=p=> angDiff(compass(sub(p,NODE)),B.bearing)<=B.beam/2 && len(sub(p,NODE))<=B.reach;
+    B.edges=()=>[uOf(B.bearing-B.beam/2), uOf(B.bearing+B.beam/2)];
+    B.render=function(){
+      const half=B.beam/2, e1=uOf(B.bearing-half), e2=uOf(B.bearing+half), c=uOf(B.bearing);
+      const p1={x:NODE.x+e1.x*B.reach, y:NODE.y+e1.y*B.reach};
+      const p2={x:NODE.x+e2.x*B.reach, y:NODE.y+e2.y*B.reach};
+      wedge.setAttribute('d',`M${NODE.x} ${NODE.y} L${p1.x} ${p1.y} A${B.reach} ${B.reach} 0 ${B.beam>180?1:0} 1 ${p2.x} ${p2.y} Z`);
+      axis.setAttribute('x1',NODE.x); axis.setAttribute('y1',NODE.y);
+      axis.setAttribute('x2',NODE.x+c.x*B.reach); axis.setAttribute('y2',NODE.y+c.y*B.reach);
+      aimK.setAttribute('transform',`translate(${NODE.x+c.x*B.reach},${NODE.y+c.y*B.reach})`);
+      widthK.setAttribute('transform',`translate(${p2.x},${p2.y})`);
+    };
+    const changed=()=>{ B.render(); opts.onChange && opts.onChange(B); };
+    const big={x0:-9999,x1:9999,y0:-9999,y1:9999};
+    draggable(svg, aimK,   ()=>0, p=>{ B.bearing=compass(sub(p,NODE)); B.reach=clamp(len(sub(p,NODE)),B.minReach,B.maxReach); changed(); }, big);
+    draggable(svg, widthK, ()=>0, p=>{ B.beam=clamp(2*angDiff(compass(sub(p,NODE)),B.bearing),B.minBeam,B.maxBeam); changed(); }, big);
+    B.render();
+    return B;
+  }
+
+  /* signed hertz, without the '-0' that toFixed happily produces */
+  const hzText = fd => { const v = Math.abs(fd)<0.5 ? 0 : fd; return (v>0?'+':'')+v.toFixed(0); };
+
   /* ── colour ramp for genuine detections (blue↔cyan↔red Doppler gradient) ── */
   function dopColor(fd){ // fd in Hz, +approaching .. -receding, cyan at 0
     const t=Math.max(-1,Math.min(1, fd/300));
@@ -851,8 +1091,8 @@
     const planeG=el('g',{},svg);
     const plane=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},planeG);
     const halo=el('circle',{r:19,fill:'var(--blue)',opacity:0.001},planeG);
-    el('circle',{r:15,fill:'none',stroke:'var(--blue)','stroke-width':1.4,'stroke-dasharray':'3 3',class:'grab-ring'},planeG);
-    el('text',{x:0,y:-20,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},planeG).textContent='◇ DRAG ME';
+    el('circle',{r:15,fill:'none',stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'3 3',class:'grab-ring'},planeG);
+    el('text',{x:0,y:-20,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink)'},planeG).textContent='◇ DRAG ME';
 
     // two stacked bars, same length: [illumination | echo] echo path  =  [baseline | bistatic range]
     const BX=70, BSCALE=3.5, BH=10, BY1=298, BY2=313;
@@ -907,12 +1147,33 @@
     const svg=$('#dop-svg'); if(!svg) return;
     // the source flies along a line that clears the observer, so the Doppler crosses zero smoothly at
     // the closest point (rather than the source flying straight through the observer)
-    const FLY_Y=150;
-    const OBS={x:250,y:224};                  // observer sits below and to the left of the flight line
+    const FLY_Y=128;
+    const OBS={x:250,y:202};                  // observer sits below the flight line
     const src={x:120,y:FLY_Y};                // moving source, travels along FLY_Y
     const hzEl=$('#dop-hz'), stateEl=$('#dop-state');
 
+    // ── the antenna's field of view: a fixed, fairly wide wedge looking straight up ──
+    // 120° across, so the source spends the first and last stretch of its pass outside it
+    const BEAM={bearing:0, width:120, reach:190};
+    const bHalf=BEAM.width/2;
+    const be1=uOf(BEAM.bearing-bHalf), be2=uOf(BEAM.bearing+bHalf);
+    const bp1={x:OBS.x+be1.x*BEAM.reach, y:OBS.y+be1.y*BEAM.reach};
+    const bp2={x:OBS.x+be2.x*BEAM.reach, y:OBS.y+be2.y*BEAM.reach};
+    el('path',{d:`M${OBS.x} ${OBS.y} L${bp1.x} ${bp1.y} A${BEAM.reach} ${BEAM.reach} 0 0 1 ${bp2.x} ${bp2.y} Z`,
+      fill:'var(--blue-dim)',stroke:'var(--blue)','stroke-width':1,'stroke-opacity':0.4},svg);
+    el('text',{x:OBS.x,y:OBS.y-58,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},svg).textContent='SURVEILLANCE BEAM · 120°';
+    const inBeam=p=> angDiff(compass(sub(p,OBS)),BEAM.bearing)<=bHalf && len(sub(p,OBS))<=BEAM.reach;
+
     el('line',{x1:20,y1:FLY_Y,x2:500,y2:FLY_Y,stroke:'var(--rule)','stroke-width':1,'stroke-dasharray':'2 4'},svg);
+    // highlight the stretch of the flight line the antenna can actually hear, and tick its edges
+    const edgeDX=(OBS.y-FLY_Y)*Math.tan(bHalf*Math.PI/180);
+    el('line',{x1:OBS.x-edgeDX,y1:FLY_Y,x2:OBS.x+edgeDX,y2:FLY_Y,stroke:'var(--blue)','stroke-width':3.5,opacity:0.3,'stroke-linecap':'round'},svg);
+    for(const ex of [OBS.x-edgeDX, OBS.x+edgeDX]){
+      el('line',{x1:ex,y1:FLY_Y-11,x2:ex,y2:FLY_Y+11,stroke:'var(--blue)','stroke-width':1,opacity:0.6},svg);
+    }
+    // labels sit out past the wedge entirely, so they never read as "deaf inside the beam"
+    el('text',{x:26,y:FLY_Y-9,class:'svg-annot',fill:'var(--ink-3)'},svg).textContent='DEAF';
+    el('text',{x:494,y:FLY_Y-9,'text-anchor':'end',class:'svg-annot',fill:'var(--ink-3)'},svg).textContent='DEAF';
     // closest-approach guide from the observer up to the flight line
     el('line',{x1:OBS.x,y1:FLY_Y,x2:OBS.x,y2:OBS.y-6,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
     // the observer is drawn as a node too
@@ -921,8 +1182,57 @@
 
     const ringsG=el('g',{},svg);
     const srcG=el('g',{},svg);
-    el('path',{d:'M-10 -4 L9 0 L-10 4 L-5 0 Z',fill:'var(--blue-strong)'},srcG);
+    const srcIcon=el('path',{d:'M-10 -4 L9 0 L-10 4 L-5 0 Z',fill:'var(--blue-strong)'},srcG);
     el('text',{x:0,y:-16,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},srcG).textContent='SOURCE';
+    const srcTag=el('text',{x:0,y:26,'text-anchor':'middle',class:'svg-annot'},srcG);
+
+    /* ── the two traces: reference straight from the tower vs the shifted echo ──
+       Wave spacing is exaggerated by roughly a million; a real 200 MHz carrier and a
+       200 MHz + 200 Hz echo are indistinguishable by eye. */
+    const F0=200e6;                            // illustrative carrier, Hz
+    const WV={x0:58, x1:482, refY:312, echoY:366, amp:14, cycles:7};
+    el('line',{x1:20,y1:256,x2:500,y2:256,stroke:'var(--rule)','stroke-width':1},svg);
+    el('text',{x:WV.x0,y:274,class:'svg-annot svg-annot-ink'},svg).textContent='WHAT THE TWO ANTENNAS RECEIVE';
+    const refLbl=el('text',{x:WV.x0,y:WV.refY-22,class:'svg-annot',fill:'var(--reference)'},svg);
+    const echoLbl=el('text',{x:WV.x0,y:WV.echoY-22,class:'svg-annot',fill:'var(--echo)'},svg);
+    el('line',{x1:WV.x0,y1:WV.refY,x2:WV.x1,y2:WV.refY,stroke:'var(--rule)','stroke-width':1,'stroke-dasharray':'1 4'},svg);
+    el('line',{x1:WV.x0,y1:WV.echoY,x2:WV.x1,y2:WV.echoY,stroke:'var(--rule)','stroke-width':1,'stroke-dasharray':'1 4'},svg);
+    const refWave=el('path',{fill:'none',stroke:'var(--reference)','stroke-width':1.6,'stroke-linejoin':'round'},svg);
+    const echoWave=el('path',{fill:'none',stroke:'var(--echo)','stroke-width':1.6,'stroke-linejoin':'round'},svg);
+    el('text',{x:WV.x1,y:WV.echoY+28,'text-anchor':'end',class:'svg-annot'},svg).textContent='WAVE SPACING EXAGGERATED ~10⁶×';
+    let refPhase=0, echoPhase=0;
+    const grp=hz=>Math.round(hz).toLocaleString('en-US');   // 200,000,113
+    function wavePath(cy, cycles, phase){
+      const N=200, span=WV.x1-WV.x0; let d='';
+      for(let i=0;i<=N;i++){
+        const t=i/N, x=WV.x0+t*span;
+        const y=cy-Math.sin(t*cycles*2*Math.PI+phase)*WV.amp;
+        d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+      }
+      return d;
+    }
+    function drawWaves(fd, heard, dt){
+      const refCycles=WV.cycles;
+      const echoCycles=WV.cycles*(1+fd/450);   // exaggerated so the squeeze is visible
+      refPhase -= dt*refCycles*1.5;
+      echoPhase -= dt*echoCycles*1.5;
+      refWave.setAttribute('d', wavePath(WV.refY, refCycles, refPhase));
+      refLbl.textContent='REFERENCE ANTENNA · '+grp(F0)+' Hz   (200 MHz)';
+      if(heard){
+        echoWave.setAttribute('d', wavePath(WV.echoY, Math.max(0.6,echoCycles), echoPhase));
+        echoWave.setAttribute('stroke','var(--echo)');
+        echoWave.setAttribute('stroke-dasharray','none');
+        echoLbl.setAttribute('fill','var(--echo)');
+        const d=Math.round(fd), sign=d<0?'−':'+';
+        echoLbl.textContent='SURVEILLANCE ANTENNA · '+grp(F0+fd)+' Hz   (200 MHz '+sign+' '+Math.abs(d)+' Hz)';
+      } else {
+        echoWave.setAttribute('d', `M${WV.x0} ${WV.echoY} L${WV.x1} ${WV.echoY}`);
+        echoWave.setAttribute('stroke','var(--ink-3)');
+        echoWave.setAttribute('stroke-dasharray','4 5');
+        echoLbl.setAttribute('fill','var(--ink-3)');
+        echoLbl.textContent='SURVEILLANCE ANTENNA · NOTHING — SOURCE IS OUTSIDE THE BEAM';
+      }
+    }
 
     // The source flies rightward through its pass; the slider sets its SPEED, which drives both how
     // fast it crosses and how big the Doppler shift is. Press play to send it past.
@@ -939,41 +1249,63 @@
       return Math.max(-300,Math.min(300, speed*toObs.x/LAMBDA));
     }
     const motionWord=fd=> fd>5?'approaching': fd<-5?'receding':'closest point';
-    function readout(fd){
-      hzEl.innerHTML=(fd>0?'+':'')+fd.toFixed(0)+' <small>Hz</small>';
-      hzEl.style.color = fd>5?'var(--dop-approach)': fd<-5?'var(--dop-recede)':'var(--blue-strong)';
-      stateEl.textContent = playing?motionWord(fd):'ready';
-      updateAudio(fd);
+    function readout(fd, heard){
+      if(heard){
+        hzEl.innerHTML=hzText(fd)+' <small>Hz</small>';
+        hzEl.style.color = fd>5?'var(--dop-approach)': fd<-5?'var(--dop-recede)':'var(--blue-strong)';
+        stateEl.textContent = playing?motionWord(fd):'ready';
+        stateEl.style.color='';
+      } else {
+        hzEl.innerHTML='— <small>Hz</small>';
+        hzEl.style.color='var(--ink-3)';
+        stateEl.textContent='out of beam';
+        stateEl.style.color='var(--ink-3)';
+      }
+      updateAudio(fd, heard);
     }
-    function draw(now){
-      if(!playing){ staticFrame(); return; }   // idle: show the frozen bunched wavefronts
+    function paintSource(heard){
+      srcG.setAttribute('transform',`translate(${src.x},${src.y})`);
+      srcIcon.setAttribute('fill', heard?'var(--blue-strong)':'var(--ink-3)');
+      srcTag.setAttribute('fill', heard?'var(--truth)':'var(--ink-3)');
+      srcTag.textContent = heard?'HEARD':'NOT HEARD';
+    }
+    function draw(now, dt){
+      const heard=inBeam(src);
+      if(!playing){ staticFrame(dt); return; }   // idle: show the frozen bunched wavefronts
       ringsG.innerHTML='';
       for(const r of rings){
         const age=(now-r.t)/1000, rad=age*130;
         if(rad>440) continue;
-        el('circle',{cx:r.x,cy:r.y,r:rad,fill:'none',stroke:'var(--blue)','stroke-width':1,opacity:Math.max(0,0.5-age*0.14)},ringsG);
+        el('circle',{cx:r.x,cy:r.y,r:rad,fill:'none',stroke:heard?'var(--blue)':'var(--ink-3)','stroke-width':1,
+          opacity:Math.max(0,(heard?0.5:0.25)-age*0.14)},ringsG);
       }
-      srcG.setAttribute('transform',`translate(${src.x},${src.y})`);
-      readout(computeHz());
+      paintSource(heard);
+      const fd=computeHz();
+      readout(fd, heard);
+      drawWaves(fd, heard, dt);
     }
-    function staticFrame(){          // reduced motion / idle: bunched wavefronts at a representative spot
+    function staticFrame(dt){        // reduced motion / idle: bunched wavefronts at a representative spot
+      const heard=inBeam(src);
       ringsG.innerHTML='';
       for(let k=1;k<=6;k++){
         const rad=k*26, cx=src.x - VX_PER_MS*speed*0.006*rad;
-        el('circle',{cx:cx,cy:src.y,r:rad,fill:'none',stroke:'var(--blue)','stroke-width':1,opacity:Math.max(0,0.5-k*0.06)},ringsG);
+        el('circle',{cx:cx,cy:src.y,r:rad,fill:'none',stroke:heard?'var(--blue)':'var(--ink-3)','stroke-width':1,
+          opacity:Math.max(0,(heard?0.5:0.25)-k*0.06)},ringsG);
       }
-      srcG.setAttribute('transform',`translate(${src.x},${src.y})`);
-      readout(computeHz());
+      paintSource(heard);
+      const fd=computeHz();
+      readout(fd, heard);
+      drawWaves(fd, heard, dt||0);
     }
     function loop(now){
+      const dt=Math.min(0.05,(now-(loop._p||now))/1000);
       if(playing){
-        const dt=(now-(loop._p||now))/1000;
         src.x += VX_PER_MS*speed*dt;
         if(src.x>X1){ src.x=X0; rings=[]; }         // loop the pass
         if(now-lastEmit>260){ emit(now); lastEmit=now; }
       }
       loop._p=now;
-      draw(now);
+      draw(now, dt);
       raf=requestAnimationFrame(loop);
     }
 
@@ -986,9 +1318,10 @@
       gain.gain.value=0; osc.type='sine'; osc.frequency.value=440;
       osc.connect(gain).connect(actx.destination); osc.start();
     }
-    function updateAudio(fd){
+    // heard === false means the source has left the antenna's wedge: the tone goes silent
+    function updateAudio(fd, heard){
       if(!actx) return;
-      const on = soundOn && playing;
+      const on = soundOn && playing && heard;
       gain.gain.setTargetAtTime(on?0.06:0, actx.currentTime, 0.04);
       if(on) osc.frequency.setTargetAtTime(440+fd*0.8, actx.currentTime, 0.05);
     }
@@ -998,21 +1331,21 @@
       playing=!playing; playBtn.setAttribute('aria-pressed',playing);
       playBtn.textContent = playing?'❚❚ Stop':'▶ Send it past';
       if(playing){ src.x=X0; rings=[]; if(soundOn){ ensureAudio(); actx.resume&&actx.resume(); } }
-      if(REDUCED) staticFrame(); else updateAudio(computeHz());
+      if(REDUCED) staticFrame(0); else updateAudio(computeHz(), inBeam(src));
     });
     soundBtn.addEventListener('click',()=>{
       soundOn=!soundOn; soundBtn.setAttribute('aria-pressed',soundOn);
       soundBtn.textContent = soundOn?'🔊 Sound':'🔇 Sound';
       if(soundOn){ ensureAudio(); actx.resume&&actx.resume(); }
-      updateAudio(computeHz());
+      updateAudio(computeHz(), inBeam(src));
     });
     $('#dop-speed').addEventListener('input',e=>{
       speed=+e.target.value; $('#dop-speed-v').textContent=speed+' m/s';
-      if(REDUCED) staticFrame();
+      if(REDUCED) staticFrame(0);
     });
 
     if(!REDUCED) raf=requestAnimationFrame(loop);
-    else staticFrame();
+    else staticFrame(0);
   })();
 
   /* ════════════════ MODULE 3 — delay-Doppler live dot ════════════════ */
@@ -1022,7 +1355,7 @@
     // top-down (map) view: tower and node are two points on the ground, plane seen from above
     const TX={x:130,y:190}, NODE={x:400,y:190};
     const A={x:250,y:74};
-    let vel={x:60,y:0};                      // velocity direction handle offset from A
+    let vel={x:44,y:-38};                    // velocity direction handle offset from A
     const speed=230;                         // m/s (fixed, illustrative)
 
     // plan-view label + north indicator
@@ -1045,34 +1378,50 @@
     el('path',{d:'M0 0 L6 3 L0 6 Z',fill:'var(--ink)'},mk);
 
     // the plane = position handle (dark glyph, "MOVE"); the knob = heading handle (blue, "AIM")
+    // The aircraft is a handle too, not just scenery — give it the same pulsing dashed ring the
+    // other draggable glyphs on the page wear, so it reads as grabbable next to the AIM knob.
     const planeG=el('g',{},svg);
-    const planeHalo=el('circle',{r:17,opacity:0.001,fill:'var(--blue)'},planeG);
+    el('circle',{r:16,fill:'none',stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'3 3',class:'grab-ring'},planeG);
+    const planeHalo=el('circle',{r:19,opacity:0.001,fill:'var(--ink)'},planeG);
     const plane=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},planeG);
-    el('text',{x:0,y:20,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},planeG).textContent='◇ MOVE';
+    el('text',{x:0,y:30,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink)'},planeG).textContent='◇ DRAG THE PLANE';
+    // The zero-Doppler guide. Bistatic Doppler is zero when the velocity is perpendicular to the
+    // SUM of the two unit legs (tower→plane and node→plane) — that sum bisects the angle between
+    // them and is the normal to the equal-range ellipse. So 0 Hz means "flying along the ellipse",
+    // which is only "perpendicular to the node" in the special case where tower and node coincide.
+    const bisLine=el('line',{stroke:'var(--bistatic)','stroke-width':1,'stroke-dasharray':'2 3',opacity:0.75},svg);
+    const zeroLine=el('line',{stroke:'var(--dop-zero)','stroke-width':2,'stroke-dasharray':'6 4',opacity:0.95,'stroke-linecap':'round'},svg);
+    const zeroLbl=el('text',{'text-anchor':'middle',class:'svg-annot',fill:'var(--dop-zero)'},svg);
+    zeroLbl.textContent='0 Hz LINE';
+    // the aircraft's heading handle reads black like the aircraft itself; the label lives
+    // inside the pulsing ring, so there's no solid dot to confuse with the beam's knobs
     const velG=el('g',{},svg);
-    el('circle',{r:13,fill:'none',stroke:'var(--blue)','stroke-width':1.2,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},velG);
-    el('circle',{r:8,fill:'var(--blue)',stroke:'var(--paper)','stroke-width':2},velG);
-    el('text',{x:0,y:-15,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},velG).textContent='AIM';
+    el('circle',{r:12,fill:'var(--surface)',opacity:0.88},velG);   // pad: keeps AIM readable over the arc
+    el('circle',{r:13,fill:'none',stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},velG);
+    el('circle',{r:17,opacity:0.001,fill:'var(--ink)'},velG);
+    el('text',{x:0,y:3,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink)'},velG).textContent='AIM';
 
-    // plot furniture — 520-wide box, matching the max-hold plot in demo 4 so the two read the same
-    const PL={x0:70,y0:14,x1:490,y1:186};    // plot box: doppler x, range y
-    const fdToX=fd=>PL.x0+(fd+300)/600*(PL.x1-PL.x0);
-    const rgToY=r=>PL.y1-(r/40)*(PL.y1-PL.y0); // 0 km at bottom, 40 at top
+    // plot furniture — 520-wide box, matching the max-hold plot in demo 4 so the two read the same.
+    // Page-wide convention: RANGE runs left→right, DOPPLER runs bottom→top.
+    const PL={x0:70,y0:16,x1:490,y1:184};    // plot box: range x, doppler y
+    const RMAX=50;
+    const rgToX=r=>PL.x0+(r/RMAX)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((fd+300)/600)*(PL.y1-PL.y0);   // +300 Hz at top, −300 at bottom
     function buildPlot(){
       el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},plot);
       // zero-doppler line
-      el('line',{x1:fdToX(0),y1:PL.y0,x2:fdToX(0),y2:PL.y1,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},plot);
+      el('line',{x1:PL.x0,y1:fdToY(0),x2:PL.x1,y2:fdToY(0),stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},plot);
+      for(const r of [0,10,20,30,40,50]){
+        el('text',{x:rgToX(r),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},plot).textContent=r;
+      }
       for(const fd of [-300,-150,0,150,300]){
-        el('text',{x:fdToX(fd),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},plot).textContent=(fd>0?'+':'')+fd;
+        el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},plot).textContent=(fd>0?'+':'')+fd;
       }
-      for(const r of [0,10,20,30,40]){
-        el('text',{x:PL.x0-10,y:rgToY(r)+3,'text-anchor':'end',class:'svg-annot'},plot).textContent=r;
-      }
-      el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+32,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},plot).textContent='DOPPLER  (Hz)  →  velocity';
+      el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+32,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},plot).textContent='RANGE  (km)  →  how far';
       const yl=el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},plot);
-      yl.textContent='RANGE  (km)';
+      yl.textContent='DOPPLER  (Hz)';
     }
-    const detDot=el('circle',{r:6,fill:'var(--dop-zero)',stroke:'var(--paper)','stroke-width':1.5},plot);
+    const detDot=el('circle',{r:6,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},plot);
     const detGuideV=el('line',{stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 2'},plot);
     const detGuideH=el('line',{stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 2'},plot);
 
@@ -1087,19 +1436,31 @@
       plane.setAttribute('transform',`rotate(${Math.atan2(vel.y,vel.x)*180/Math.PI})`);
       const hx=A.x+vel.x, hy=A.y+vel.y;
       velLine.setAttribute('x1',A.x); velLine.setAttribute('y1',A.y);
-      velLine.setAttribute('x2',hx); velLine.setAttribute('y2',hy);
+      velLine.setAttribute('x2',A.x+vel.x*0.6); velLine.setAttribute('y2',A.y+vel.y*0.6);
       velG.setAttribute('transform',`translate(${hx},${hy})`);
 
       // physics
       const range=(len(sub(A,TX))+len(sub(A,NODE))-len(sub(NODE,TX)))*KM_PER_PX;
       const uTx=unit(sub(A,TX)), uNo=unit(sub(A,NODE));
-      const geom = dot(vdir, add(uTx,uNo));  // -2..2
+      const wSum=add(uTx,uNo);               // ellipse normal / bisector of the two legs
+      const geom = dot(vdir, wSum);          // -2..2
       const fd = Math.max(-300,Math.min(300, -(speed/LAMBDA)*geom));
+      // draw the bisector and the direction of travel that makes the Doppler vanish
+      const wn=unit(wSum), zp={x:-wn.y, y:wn.x};
+      bisLine.setAttribute('x1',A.x-wn.x*38); bisLine.setAttribute('y1',A.y-wn.y*38);
+      bisLine.setAttribute('x2',A.x+wn.x*38); bisLine.setAttribute('y2',A.y+wn.y*38);
+      zeroLine.setAttribute('x1',A.x-zp.x*56); zeroLine.setAttribute('y1',A.y-zp.y*56);
+      zeroLine.setAttribute('x2',A.x+zp.x*56); zeroLine.setAttribute('y2',A.y+zp.y*56);
+      // put the caption on whichever end of the line is farther from the AIM handle
+      const hp={x:A.x+vel.x, y:A.y+vel.y};
+      const endA={x:A.x+zp.x*74, y:A.y+zp.y*74}, endB={x:A.x-zp.x*74, y:A.y-zp.y*74};
+      const lp = len(sub(endA,hp))>=len(sub(endB,hp)) ? endA : endB;
+      zeroLbl.setAttribute('x',lp.x); zeroLbl.setAttribute('y',lp.y+3);
       rangeEl.innerHTML=range.toFixed(1)+' <small>km</small>';
-      dopEl.innerHTML=(fd>0?'+':'')+fd.toFixed(0)+' <small>Hz</small>';
+      dopEl.innerHTML=hzText(fd)+' <small>Hz</small>';
       dopEl.style.color=dopColor(fd);
-      const px=fdToX(fd), py=rgToY(Math.max(0,Math.min(40,range)));
-      detDot.setAttribute('cx',px); detDot.setAttribute('cy',py); detDot.setAttribute('fill',dopColor(fd));
+      const px=rgToX(clamp(range,0,RMAX)), py=fdToY(fd);
+      detDot.setAttribute('cx',px); detDot.setAttribute('cy',py);
       detGuideV.setAttribute('x1',px); detGuideV.setAttribute('y1',py); detGuideV.setAttribute('x2',px); detGuideV.setAttribute('y2',PL.y1);
       detGuideH.setAttribute('x1',PL.x0); detGuideH.setAttribute('y1',py); detGuideH.setAttribute('x2',px); detGuideH.setAttribute('y2',py);
     }
@@ -1109,77 +1470,132 @@
       let d=sub(p,A); const l=len(d)||1;      // fixed handle length so it reads as a direction
       vel={x:d.x/l*46, y:d.y/l*46}; render();
     }, {x0:0,x1:520,y0:0,y1:232});
+    const snap=$('#dd-snap');
+    if(snap) snap.addEventListener('click',()=>{
+      const wn=unit(add(unit(sub(A,TX)), unit(sub(A,NODE))));
+      const zp={x:-wn.y, y:wn.x};
+      // keep whichever of the two opposite headings is closer to the current one
+      const sgn = dot(zp,unit(vel))>=0 ? 1 : -1;
+      vel={x:zp.x*46*sgn, y:zp.y*46*sgn};
+      render();
+    });
     buildPlot(); render();
   })();
 
-  /* ════════════════ MODULE 4 — 10s max hold ════════════════ */
+  /* ════════════════ MODULE 4 — max hold, gated by a steerable beam ════════════════ */
   (function maxHold(){
     const svg=$('#mh-plot'); if(!svg) return;
+    // page-wide convention: RANGE runs left→right, DOPPLER runs bottom→top
     const PL={x0:70,y0:30,x1:490,y1:310};
-    const fdToX=fd=>PL.x0+(fd+300)/600*(PL.x1-PL.x0);
-    const rgToY=r=>PL.y1-(r/45)*(PL.y1-PL.y0);
+    const rgToX=r=>PL.x0+(r/45)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((fd+300)/600)*(PL.y1-PL.y0);
     // axes
     el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},svg);
-    el('line',{x1:fdToX(0),y1:PL.y0,x2:fdToX(0),y2:PL.y1,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
-    el('text',{x:fdToX(0),y:PL.y0-8,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='0 Hz · CLOSEST APPROACH';
-    for(const fd of [-300,-150,150,300]) el('text',{x:fdToX(fd),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},svg).textContent=(fd>0?'+':'')+fd;
-    for(const r of [0,15,30,45]) el('text',{x:PL.x0-10,y:rgToY(r)+3,'text-anchor':'end',class:'svg-annot'},svg).textContent=r;
-    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+32,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='DOPPLER  (Hz)  →  velocity';
-    el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},svg).textContent='RANGE  (km)';
+    const zeroY=fdToY(0);
+    el('line',{x1:PL.x0,y1:zeroY,x2:PL.x1,y2:zeroY,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
+    el('text',{x:PL.x1-4,y:zeroY-7,'text-anchor':'end',class:'svg-annot svg-annot-ink'},svg).textContent='0 Hz · CLOSEST APPROACH';
+    for(const r of [0,15,30,45]) el('text',{x:rgToX(r),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},svg).textContent=r;
+    for(const fd of [-300,-150,150,300]) el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},svg).textContent=(fd>0?'+':'')+fd;
+    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+32,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='RANGE  (km)  →  how far';
+    el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},svg).textContent='DOPPLER  (Hz)';
 
     const trailG=el('g',{},svg);
-    const headDot=el('circle',{r:5,fill:'var(--dop-zero)',stroke:'var(--paper)','stroke-width':1.5},svg);
+    const headDot=el('circle',{r:5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},svg);
+    const silentLbl=el('text',{x:(PL.x0+PL.x1)/2,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink-3)',opacity:0},svg);
+    silentLbl.textContent='NOTHING IN THE BEAM — NO DETECTIONS TO PLOT';
 
-    let speed=220, miss=6, playing=!REDUCED, raf=null;
-    // synced spatial view: the plane physically flying past the node, in step with the track below
+    let speed=220, miss=10, playing=!REDUCED, raf=null;
+    // synced spatial view: the plane physically flying past the node, in step with the track below.
+    // sx === my, so this really is a true-scale plan view rather than a stretched one.
     const scene=$('#mh-scene');
-    const SC={cx:260, nodeY:116, sx:6, my:3.4};
-    let sceneFlight, sceneConn, scenePlaneG;
+    const SC={cx:260, nodeY:225, sx:6.2, my:6.2};
+    const NODEP={x:SC.cx, y:SC.nodeY};
+    const FX0=88, FX1=432;                   // on-screen extent of the flight line
+    const flightY=()=>SC.nodeY - Math.max(1,miss)*SC.my;
+    let beam=null, sceneFlight, sceneConn, scenePlaneG, scenePlaneIcon, scenePlaneTag, beamSegG, missGuide;
+    const heardEl=$('#mh-heard'), beamEl=$('#mh-beam-v');
     if(scene){
-      el('text',{x:34,y:20,class:'svg-annot'},scene).textContent='THE FLY-BY (TOP-DOWN)';
-      el('line',{x1:SC.cx,y1:28,x2:SC.cx,y2:SC.nodeY,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},scene);
+      const bg=el('g',{},scene);             // the wedge lives behind the scene…
+      el('text',{x:34,y:18,class:'svg-annot'},scene).textContent='THE FLY-BY (TOP-DOWN) · TRUE SCALE';
+      missGuide=el('line',{stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},scene);
       sceneFlight=el('line',{stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'5 5'},scene);
+      beamSegG=el('g',{},scene);             // the stretch of flight line the beam can hear
       sceneConn=el('line',{stroke:'var(--echo)','stroke-width':1.4,opacity:0.85},scene);
-      nodeGlyph(scene, {x:SC.cx,y:SC.nodeY}, SC.nodeY+7);
+      nodeGlyph(scene, NODEP, SC.nodeY+7);
       el('text',{x:SC.cx+16,y:SC.nodeY+3,class:'svg-annot'},scene).textContent='NODE';
       scenePlaneG=el('g',{},scene);
-      el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},scenePlaneG);
+      scenePlaneIcon=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},scenePlaneG);
+      scenePlaneTag=el('text',{x:0,y:-13,'text-anchor':'middle',class:'svg-annot'},scenePlaneG);
+      const fg=el('g',{},scene);             // …its knobs stay on top and grabbable
+      beam=makeBeam(scene, NODEP, {bg,fg,bearing:0,beam:120,reach:190,minReach:70,maxReach:235,onChange:onBeam});
     }
+    function seenAt(aKm){
+      if(!beam) return true;
+      return beam.inBeam({x:SC.cx+aKm*SC.sx, y:flightY()});
+    }
+    function onBeam(){
+      if(beamEl) beamEl.innerHTML=beam.beam.toFixed(0)+'<small>°</small>';
+      resync(); draw();
+    }
+    function resync(){ for(const p of track) p.seen=seenAt(p.a); }
+
     function updateScene(aKm){
       if(!scene) return;
-      const flightY=SC.nodeY - Math.max(1,miss)*SC.my;
-      sceneFlight.setAttribute('x1',40); sceneFlight.setAttribute('y1',flightY); sceneFlight.setAttribute('x2',480); sceneFlight.setAttribute('y2',flightY);
-      const px=SC.cx+aKm*SC.sx;
-      scenePlaneG.setAttribute('transform',`translate(${px},${flightY})`);
-      sceneConn.setAttribute('x1',px); sceneConn.setAttribute('y1',flightY); sceneConn.setAttribute('x2',SC.cx); sceneConn.setAttribute('y2',SC.nodeY);
+      const fy=flightY();
+      sceneFlight.setAttribute('x1',FX0); sceneFlight.setAttribute('y1',fy);
+      sceneFlight.setAttribute('x2',FX1); sceneFlight.setAttribute('y2',fy);
+      missGuide.setAttribute('x1',SC.cx); missGuide.setAttribute('y1',fy);
+      missGuide.setAttribute('x2',SC.cx); missGuide.setAttribute('y2',SC.nodeY-6);
+      // shade the stretch of the flight path that actually falls inside the beam
+      beamSegG.innerHTML='';
+      let segStart=null;
+      for(let x=FX0;x<=FX1;x+=3){
+        const ok=!beam || beam.inBeam({x,y:fy});
+        if(ok && segStart===null) segStart=x;
+        if((!ok || x+3>FX1) && segStart!==null){
+          el('line',{x1:segStart,y1:fy,x2:x,y2:fy,stroke:'var(--blue)','stroke-width':3.5,opacity:0.35,'stroke-linecap':'round'},beamSegG);
+          segStart=null;
+        }
+      }
+      const px=SC.cx+aKm*SC.sx, heard=seenAt(aKm);
+      scenePlaneG.setAttribute('transform',`translate(${px},${fy})`);
+      scenePlaneIcon.setAttribute('fill', heard?'var(--truth)':'var(--ink)');
+      scenePlaneTag.setAttribute('fill', heard?'var(--truth)':'var(--ink-3)');
+      scenePlaneTag.textContent = heard?'HEARD':'NOT HEARD';
+      sceneConn.setAttribute('x1',px); sceneConn.setAttribute('y1',fy);
+      sceneConn.setAttribute('x2',SC.cx); sceneConn.setAttribute('y2',SC.nodeY);
+      sceneConn.setAttribute('opacity', heard?0.9:0.12);
+      if(heardEl){ heardEl.textContent = heard?'detecting':'deaf'; heardEl.style.color = heard?'var(--truth)':'var(--ink-3)'; }
     }
 
-    // The signature is really a whole pass: the aircraft sweeps in from far, dips to its
+    // The signature is really a whole pass: the aircraft sweeps in from far, swings through its
     // closest approach at 0 Hz, then opens away. We accumulate that full track (a rolling
     // max hold) and loop it, rather than a literal 10 s at cruise (where range barely moves).
-    const AMAX=36;                           // km of along-track swept each side of closest approach
+    const AMAX=26;                           // km of along-track swept each side of closest approach
     const BISTATIC=1.1;                      // extra-path factor (illustrative)
     const SWEEP_PER_MS=0.06;                 // km/s of accumulation per m/s of speed (time-compressed)
     let a=-AMAX;                             // current along-track position (km)
-    let track=[];                           // {fd,r}
+    let track=[];                            // {a,fd,r,seen}
 
     function point(aKm){
       const slant=Math.hypot(aKm, miss)||1e-3;   // km
       const range=Math.min(45, slant*BISTATIC);
       const vrad=speed*(aKm/slant);              // m/s, + when opening away (a>0)
       const fd=Math.max(-300,Math.min(300, -(vrad/LAMBDA)*2 ));
-      return {fd, r:range};
+      return {a:aKm, fd, r:range, seen:seenAt(aKm)};
     }
     function draw(){
       trailG.innerHTML='';
       for(let i=1;i<track.length;i++){
         const A=track[i-1],B=track[i];
-        el('line',{x1:fdToX(A.fd),y1:rgToY(A.r),x2:fdToX(B.fd),y2:rgToY(B.r),
+        if(!A.seen || !B.seen) continue;       // the beam heard nothing here, so nothing is drawn
+        el('line',{x1:rgToX(A.r),y1:fdToY(A.fd),x2:rgToX(B.r),y2:fdToY(B.fd),
           stroke:dopColor(B.fd),'stroke-width':3,'stroke-linecap':'round',opacity:0.85},trailG);
       }
       const h=track[track.length-1];
-      if(h){ headDot.setAttribute('cx',fdToX(h.fd)); headDot.setAttribute('cy',rgToY(h.r)); headDot.setAttribute('fill',dopColor(h.fd)); headDot.setAttribute('opacity',1); }
+      if(h && h.seen){ headDot.setAttribute('cx',rgToX(h.r)); headDot.setAttribute('cy',fdToY(h.fd)); headDot.setAttribute('opacity',1); }
       else headDot.setAttribute('opacity',0);
+      silentLbl.setAttribute('opacity', (track.length>4 && !track.some(p=>p.seen))?1:0);
       updateScene(a);
     }
     function rebuildFull(){                   // whole pass at once (static / reduced motion)
@@ -1197,253 +1613,733 @@
     }
 
     $('#mh-speed').addEventListener('input',e=>{ speed=+e.target.value; $('#mh-speed-v').textContent=speed+' m/s'; if(!playing)rebuildFull(); });
-    $('#mh-miss').addEventListener('input',e=>{ miss=+e.target.value; $('#mh-miss-v').textContent=miss+' km'; if(!playing)rebuildFull(); });
+    $('#mh-miss').addEventListener('input',e=>{
+      miss=+e.target.value; $('#mh-miss-v').textContent=miss+' km';
+      if(playing){ resync(); draw(); } else rebuildFull();       // moving the track re-tests the beam
+    });
     const playBtn=$('#mh-play');
     playBtn.addEventListener('click',()=>{ playing=!playing; playBtn.setAttribute('aria-pressed',playing); playBtn.textContent=playing?'❚❚ Pause':'▶ Play'; if(playing){ a=-AMAX; track=[]; } });
     $('#mh-clear').addEventListener('click',()=>{ track=[]; a=-AMAX; draw(); });
+    $('#mh-reset-beam').addEventListener('click',()=>{
+      if(!beam) return;
+      beam.bearing=0; beam.beam=120; beam.reach=190; beam.render(); onBeam();
+    });
 
+    if(beam) onBeam();
     if(REDUCED){ playing=false; playBtn.setAttribute('aria-pressed',false); playBtn.textContent='▶ Play'; rebuildFull(); }
     else raf=requestAnimationFrame(loop);
   })();
 
-  /* ════════════════ MODULE 5 — range ambiguity ════════════════ */
-  (function ambiguity(){
-    const svg=$('#amb-svg'); if(!svg) return;
-    // Plan (top-down) view. The tower and the node are the two foci of the equal-range ellipse.
-    const TX={x:150,y:210}, NODE={x:340,y:210};
+  /* ════════════════ MODULE 5 — the arc of candidates ═══════════════════════════════
+     Section 5's four figures are all the SAME picture: tower, node, surveillance beam,
+     the equal-range ellipse through the aircraft, and the slice of that ellipse the beam
+     can see. Every point on that slice returns an identical bistatic range (that's what
+     "on the ellipse" means), and for each of them there is a heading that reproduces the
+     measured Doppler exactly — so the node has nothing at all to separate them with.
+
+     ambiguityScene() builds that base and exposes an `overlay` group plus an onRender
+     hook, so each of the three resolution methods can draw its own second locus over it
+     and mark which candidate survives.                                                */
+  let AMB_SEQ=0;
+  /* the second tower / node are static, so stamp their glyph once rather than every frame */
+  const _once={};
+  function nodeGlyphOnce(svg, P, key){
+    if(_once[svg.id+key]) return; _once[svg.id+key]=1;
+    nodeGlyph(svg, P, P.y+7);
+    el('text',{x:P.x,y:P.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent='NODE B';
+  }
+  function towerGlyphOnce(svg, P, key){
+    if(_once[svg.id+key]) return; _once[svg.id+key]=1;
+    towerGlyph(svg, P, P.y+16);
+    el('text',{x:P.x,y:P.y+30,'text-anchor':'middle',class:'svg-annot'},svg).textContent='TOWER 2';
+  }
+
+  function ambiguityScene(svg, opts={}){
+    const uid='amb'+(AMB_SEQ++);
+    const TX={x:96,y:352}, NODE={x:286,y:352};
     const CEN={x:(TX.x+NODE.x)/2, y:TX.y};
     const BASE=len(sub(NODE,TX)), HALFBASE=BASE/2;
-    // Everything is direct-drag now, no sliders:
-    //  · the aircraft moves freely — its position sets the bistatic range (the ellipse redraws through it)
-    //  · the AIM handle (centre of the arc) sets the beam's bearing and reach
-    //  · the WIDTH handle (corner of the arc) sets the beam's angular width
-    let plane={x:310,y:147};
-    let bearing=335, reach=110, beam=52;
+    const BEAM={bearing:345, width:80, reach:262};
+    const SPEED=230, NCAND=5;
+    const st={P:{x:240,y:150}, vel:{x:59,y:18}};
+    if(opts.start) st.P={...opts.start};
+    const inBeam=p=> angDiff(compass(sub(p,NODE)),BEAM.bearing)<=BEAM.width/2 && len(sub(p,NODE))<=BEAM.reach;
 
-    const wedge=el('path',{fill:'var(--blue-dim)',stroke:'var(--blue)','stroke-width':1,'stroke-opacity':0.35},svg);
-    const ellipse=el('ellipse',{cx:CEN.x,cy:CEN.y,fill:'none',stroke:'var(--bistatic)','stroke-width':1.2,'stroke-dasharray':'5 5',opacity:0.7},svg);
-    const arcLine=el('path',{fill:'none',stroke:'var(--blue-strong)','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round'},svg);
-    // tower + node foci (antennas at TX / NODE — the beam starts at the node antenna)
+    // ── beam wedge, drawn first so everything else sits on top of it
+    const bHalf=BEAM.width/2, e1=uOf(BEAM.bearing-bHalf), e2=uOf(BEAM.bearing+bHalf);
+    const wp1={x:NODE.x+e1.x*BEAM.reach, y:NODE.y+e1.y*BEAM.reach};
+    const wp2={x:NODE.x+e2.x*BEAM.reach, y:NODE.y+e2.y*BEAM.reach};
+    el('path',{d:`M${NODE.x} ${NODE.y} L${wp1.x} ${wp1.y} A${BEAM.reach} ${BEAM.reach} 0 0 1 ${wp2.x} ${wp2.y} Z`,
+      fill:'var(--blue-dim)',stroke:'var(--blue)','stroke-width':1,'stroke-opacity':0.35},svg);
+    el('text',{x:34,y:18,class:'svg-annot'},svg).textContent=opts.title||'PLAN VIEW · FROM ABOVE';
+
+    const ellipseEl=el('ellipse',{cx:CEN.x,cy:CEN.y,fill:'none',stroke:'var(--bistatic)','stroke-width':1.1,'stroke-dasharray':'5 5',opacity:0.45},svg);
+    const arcEl=el('path',{fill:'none',stroke:'var(--bistatic)','stroke-width':3,'stroke-linecap':'round',opacity:0.45},svg);
+    const arcLbl=el('text',{'text-anchor':'middle',class:'svg-annot',fill:'var(--bistatic)'},svg);
+    arcLbl.textContent = opts.arcLabel!==undefined ? opts.arcLabel : 'EVERY POINT ON THIS ARC FITS';
+    const overlay=el('g',{},svg);          // second locus: drawn under the candidates
+    const candG=el('g',{},svg);
+    const overlayTop=el('g',{},svg);       // verdict marks: drawn over the candidates
+    const legTx=el('line',{stroke:'var(--blue)','stroke-width':1.2,opacity:0.5},svg);
+    const legNo=el('line',{stroke:'var(--echo)','stroke-width':1.4,opacity:0.7},svg);
+    el('line',{x1:TX.x,y1:TX.y,x2:NODE.x,y2:NODE.y,stroke:'var(--reference)','stroke-width':1.2,'stroke-dasharray':'4 4',opacity:0.7},svg);
     towerGlyph(svg, TX, TX.y+16);
-    el('text',{x:TX.x,y:TX.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent='TOWER';
+    el('text',{x:TX.x,y:TX.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent=opts.txLabel||'TOWER';
     nodeGlyph(svg, NODE, NODE.y+7);
-    el('text',{x:NODE.x,y:NODE.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent='NODE';
+    el('text',{x:NODE.x,y:NODE.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent=opts.nodeLabel||'NODE';
 
-    // baseline (green, static) + the two moving legs (blue tower→plane, amber plane→node)
-    el('line',{x1:TX.x,y1:TX.y,x2:NODE.x,y2:NODE.y,stroke:'var(--reference)','stroke-width':1.2,'stroke-dasharray':'4 4',opacity:0.75},svg);
-    const legTx=el('line',{stroke:'var(--blue)','stroke-width':1.4,opacity:0.75},svg);
-    const legNode=el('line',{stroke:'var(--echo)','stroke-width':1.7,opacity:0.95},svg);
+    const defs=el('defs',{},svg);
+    const mk=el('marker',{id:uid+'-ar',markerWidth:8,markerHeight:8,refX:6,refY:3,orient:'auto'},defs);
+    el('path',{d:'M0 0 L6 3 L0 6 Z',fill:'var(--ink)'},mk);
+    const mkG=el('marker',{id:uid+'-arg',markerWidth:8,markerHeight:8,refX:6,refY:3,orient:'auto'},defs);
+    el('path',{d:'M0 0 L6 3 L0 6 Z',fill:'var(--ink-3)'},mkG);
 
-    const uOf=deg=>{const r=deg*Math.PI/180; return {x:Math.sin(r), y:-Math.cos(r)};};   // 0°=up, clockwise
-    const sOf=(deg,a,b)=>2*b*b/(BASE*uOf(deg).x+2*a);        // node→ellipse distance along a bearing
-    const angDiff=(x,y)=>Math.abs(((x-y)%360+540)%360-180);
-    const compass=v=>(Math.atan2(v.x,-v.y)*180/Math.PI+360)%360;
-    const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-    // a small draggable knob on the beam arc
-    function knob(label){
-      const g=el('g',{},svg);
-      el('circle',{r:13,fill:'none',stroke:'var(--blue)','stroke-width':1.2,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},g);
-      el('circle',{r:16,opacity:0.001,fill:'var(--blue)'},g);
-      el('circle',{r:5,fill:'var(--blue)',stroke:'var(--paper)','stroke-width':1.5},g);
-      el('text',{x:0,y:-14,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},g).textContent=label;
-      return g;
-    }
-    const aimHandle=knob('AIM'), widthHandle=knob('WIDTH');
-
-    // draggable aircraft (free) — its position determines the bistatic range
+    const velLine=el('line',{stroke:'var(--ink)','stroke-width':1.6,'marker-end':`url(#${uid}-ar)`},svg);
     const planeG=el('g',{},svg);
-    const glow=el('circle',{r:12,fill:'none',stroke:'var(--truth)','stroke-width':2,class:'glow-ring'},planeG);
-    const grab=el('circle',{r:15,fill:'none',stroke:'var(--blue)','stroke-width':1.2,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},planeG);
-    el('circle',{r:18,opacity:0.001,fill:'var(--blue)'},planeG);   // grab target
-    const planeIcon=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z'},planeG);
-    const planeLbl=el('text',{x:0,y:-19,'text-anchor':'middle',class:'svg-annot'},planeG);
+    el('circle',{r:16,fill:'none',stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'3 3',class:'grab-ring'},planeG);
+    const planeHalo=el('circle',{r:19,opacity:0.001,fill:'var(--ink)'},planeG);
+    const planeIcon=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},planeG);
+    const planeLbl=el('text',{x:0,y:-24,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink)'},planeG);
+    planeLbl.textContent='◇ THE REAL AIRCRAFT';
+    // the aircraft's heading handle reads black like the aircraft itself; the label lives
+    // inside the pulsing ring, so there's no solid dot to confuse with the beam's knobs
+    const velG=el('g',{},svg);
+    el('circle',{r:12,fill:'var(--surface)',opacity:0.88},velG);   // pad: keeps AIM readable over the arc
+    el('circle',{r:13,fill:'none',stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'2.5 2.5',class:'grab-ring'},velG);
+    el('circle',{r:17,opacity:0.001,fill:'var(--ink)'},velG);
+    el('text',{x:0,y:3,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink)'},velG).textContent='AIM';
 
-    function render(){
-      // the equal-bistatic-range ellipse that passes through the freely-placed plane (foci TX & NODE)
-      const a=(len(sub(plane,TX))+len(sub(plane,NODE)))/2;
-      const b=Math.sqrt(Math.max(1,a*a-HALFBASE*HALFBASE));
-      ellipse.setAttribute('rx',a); ellipse.setAttribute('ry',b);
-      // beam sector: its own radius (reach), not clipped to the ellipse
-      const half=beam/2, e1=uOf(bearing-half), e2=uOf(bearing+half);
-      const p1={x:NODE.x+e1.x*reach, y:NODE.y+e1.y*reach}, p2={x:NODE.x+e2.x*reach, y:NODE.y+e2.y*reach};
-      wedge.setAttribute('d', `M${NODE.x} ${NODE.y} L${p1.x} ${p1.y} A${reach} ${reach} 0 ${beam>180?1:0} 1 ${p2.x} ${p2.y} Z`);
-      // highlight the ellipse slice inside the sector (right direction AND within reach); break the
-      // stroke wherever the ellipse runs past the beam's reach so it never leaps across the gap
-      const step=Math.max(1.5,beam/44); let d='', pen=false;
-      for(let t=-half;t<=half+1e-6;t+=step){ const th=bearing+t, s=sOf(th,a,b), u=uOf(th);
-        if(s<=reach){ d+=(pen?'L':'M')+(NODE.x+u.x*s).toFixed(1)+' '+(NODE.y+u.y*s).toFixed(1)+' '; pen=true; }
-        else pen=false;
-      }
-      arcLine.setAttribute('d', d);
-      // legs
-      legTx.setAttribute('x1',TX.x); legTx.setAttribute('y1',TX.y); legTx.setAttribute('x2',plane.x); legTx.setAttribute('y2',plane.y);
-      legNode.setAttribute('x1',plane.x); legNode.setAttribute('y1',plane.y); legNode.setAttribute('x2',NODE.x); legNode.setAttribute('y2',NODE.y);
-      // plane glyph (points toward the node)
-      planeIcon.setAttribute('transform',`rotate(${Math.atan2(NODE.y-plane.y,NODE.x-plane.x)*180/Math.PI})`);
-      planeG.setAttribute('transform',`translate(${plane.x},${plane.y})`);
-      // detected only if the plane is within the beam's angle AND its reach
-      const inBeam = angDiff(compass(sub(plane,NODE)),bearing)<=half && len(sub(plane,NODE))<=reach;
-      planeIcon.setAttribute('fill', inBeam?'var(--truth)':'var(--ink)');
-      glow.setAttribute('opacity', inBeam?1:0);
-      grab.setAttribute('opacity', inBeam?0:0.9);
-      planeLbl.setAttribute('fill', inBeam?'var(--truth)':'var(--blue-strong)');
-      planeLbl.textContent = inBeam?'DETECTED':'◇ DRAG';
-      // beam knobs sit on the arc: AIM at its centre, WIDTH at its corner
-      const c=uOf(bearing);
-      aimHandle.setAttribute('transform',`translate(${NODE.x+c.x*reach},${NODE.y+c.y*reach})`);
-      widthHandle.setAttribute('transform',`translate(${p2.x},${p2.y})`);
+    /* the equal-range ellipse through P — foci TX and NODE, which share a y so it's axis-aligned */
+    const ellipseOf=P=>{
+      const a=(len(sub(P,TX))+len(sub(P,NODE)))/2;
+      return {a, b:Math.sqrt(Math.max(1,a*a-HALFBASE*HALFBASE))};
+    };
+    const ptAt=(E,t)=>({x:CEN.x+E.a*Math.cos(t), y:CEN.y+E.b*Math.sin(t)});
+    /* bistatic range in km for any point, against any tower/receiver pair */
+    const bist=(P,a,b)=>(len(sub(P,a))+len(sub(P,b))-len(sub(b,a)))*KM_PER_PX;
+    /* Doppler geometry factor: v · (unit(P−TX) + unit(P−NODE)) */
+    const wOf=P=>add(unit(sub(P,TX)), unit(sub(P,NODE)));
+    const fdOf=(P,v)=>clamp(-(SPEED/LAMBDA)*dot(unit(v), wOf(P)), -300, 300);
+    /* the same thing for an arbitrary tower/receiver pair, so a second node or a second
+       tower can report what IT would measure off the very same aircraft */
+    const fdPair=(P,v,a,b)=>clamp(-(SPEED/LAMBDA)*dot(unit(v), add(unit(sub(P,a)), unit(sub(P,b)))), -300, 300);
+    /* the heading at C that reproduces geometry factor g, closest to the reference heading */
+    function headingFor(C, g, ref){
+      const w=wOf(C), W=len(w)||1e-6, k=g/W;
+      if(Math.abs(k)>1) return null;               // no heading at this point can match
+      const wn=unit(w), th=Math.acos(k);
+      const rot=(u,r)=>({x:u.x*Math.cos(r)-u.y*Math.sin(r), y:u.x*Math.sin(r)+u.y*Math.cos(r)});
+      const c1=rot(wn,th), c2=rot(wn,-th);
+      return dot(c1,unit(ref))>=dot(c2,unit(ref)) ? c1 : c2;
     }
-    draggable(svg, planeG, ()=>0, p=>{ plane.x=clamp(p.x,40,500); plane.y=clamp(p.y,26,300); render(); }, {x0:0,x1:520,y0:0,y1:400});
-    draggable(svg, aimHandle, ()=>0, p=>{ bearing=compass(sub(p,NODE)); reach=clamp(len(sub(p,NODE)),35,250); render(); }, {x0:0,x1:520,y0:0,y1:400});
-    draggable(svg, widthHandle, ()=>0, p=>{ beam=clamp(2*angDiff(compass(sub(p,NODE)),bearing),12,150); render(); }, {x0:0,x1:520,y0:0,y1:400});
+
+    let cands=[], arcPts=[];
+    function render(){
+      const P=st.P, E=ellipseOf(P);
+      ellipseEl.setAttribute('rx',E.a); ellipseEl.setAttribute('ry',E.b);
+
+      // walk the ellipse and keep the run of it that the beam can see
+      arcPts=[];
+      const N=360;
+      for(let i=0;i<N;i++){
+        const t=-Math.PI + (i/N)*2*Math.PI;
+        const q=ptAt(E,t);
+        if(inBeam(q)) arcPts.push(q);
+      }
+      arcEl.setAttribute('d', arcPts.length>1 ? arcPts.map((q,i)=>(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)).join(' ') : '');
+      if(arcPts.length>2 && arcLbl.textContent){
+        const m=arcPts[Math.floor(arcPts.length/2)];
+        arcLbl.setAttribute('x',m.x); arcLbl.setAttribute('y',m.y+50); arcLbl.setAttribute('opacity',1);
+      } else arcLbl.setAttribute('opacity',0);
+
+      // five candidates spread along the arc, keeping clear of the real aircraft
+      const g=dot(unit(st.vel), wOf(P));
+      let trueIdx=0, best=1e9;
+      arcPts.forEach((q,i)=>{const d=len(sub(q,P)); if(d<best){best=d; trueIdx=i;}});
+      const M=arcPts.length, gap=Math.max(6, Math.round(M*0.13));
+      const idxs=new Set();
+      for(let k=0;k<NCAND-1;k++){
+        let i=Math.round((k+0.5)*M/(NCAND-1));
+        if(Math.abs(i-trueIdx)<gap) i = i<trueIdx ? trueIdx-gap : trueIdx+gap;
+        i=clamp(i,0,M-1);
+        if(Math.abs(i-trueIdx)>=gap) idxs.add(i);
+      }
+      cands=[...idxs].sort((a,b)=>a-b).map(i=>{
+        const q=arcPts[i];
+        return {p:q, v:headingFor(q,g,st.vel), real:false};
+      }).filter(c=>c.v);
+      cands.push({p:P, v:unit(st.vel), real:true});
+
+      // draw the candidate ghosts
+      candG.innerHTML='';
+      for(const c of cands){
+        if(c.real) continue;
+        const gG=el('g',{transform:`translate(${c.p.x},${c.p.y})`},candG);
+        el('circle',{r:13,fill:'var(--surface)',opacity:0.92},gG);       // punch through the arc stroke
+        el('circle',{r:13,fill:'none',stroke:'var(--ink-3)','stroke-width':1.4,'stroke-dasharray':'3 3'},gG);
+        el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink-3)',
+          transform:`rotate(${Math.atan2(c.v.y,c.v.x)*180/Math.PI})`},gG);
+        el('line',{x1:c.v.x*13,y1:c.v.y*13,x2:c.v.x*34,y2:c.v.y*34,stroke:'var(--ink-3)','stroke-width':1.2,
+          opacity:0.8,'marker-end':`url(#${uid}-arg)`},gG);
+        c.g=gG;
+      }
+
+      // the real aircraft, its legs and its heading handle
+      legTx.setAttribute('x1',TX.x); legTx.setAttribute('y1',TX.y); legTx.setAttribute('x2',P.x); legTx.setAttribute('y2',P.y);
+      legNo.setAttribute('x1',P.x); legNo.setAttribute('y1',P.y); legNo.setAttribute('x2',NODE.x); legNo.setAttribute('y2',NODE.y);
+      planeG.setAttribute('transform',`translate(${P.x},${P.y})`);
+      planeIcon.setAttribute('transform',`rotate(${Math.atan2(st.vel.y,st.vel.x)*180/Math.PI})`);
+      const hx=P.x+st.vel.x, hy=P.y+st.vel.y;
+      velLine.setAttribute('x1',P.x); velLine.setAttribute('y1',P.y);
+      velLine.setAttribute('x2',P.x+st.vel.x*0.7); velLine.setAttribute('y2',P.y+st.vel.y*0.7);
+      velG.setAttribute('transform',`translate(${hx},${hy})`);
+
+      api.range=bist(P,TX,NODE);
+      api.fd=fdOf(P,st.vel);
+      if(opts.onRender) opts.onRender(api);
+    }
+
+    const bnd={x0:-9999,x1:9999,y0:-9999,y1:9999};
+    const move=p=>{
+      // keep the aircraft inside the beam, otherwise there is no arc to talk about
+      let q={x:clamp(p.x,30,500), y:clamp(p.y,34,300)};
+      if(!inBeam(q)){
+        const d=sub(q,NODE), r=clamp(len(d),60,BEAM.reach-6);
+        const b=compass(d), bb=BEAM.bearing + clamp(((b-BEAM.bearing+540)%360)-180, -bHalf+3, bHalf-3);
+        const u=uOf(bb); q={x:NODE.x+u.x*r, y:NODE.y+u.y*r};
+      }
+      st.P=q; render();
+    };
+    draggable(svg, planeHalo, ()=>st.P, move, bnd);
+    draggable(svg, planeIcon, ()=>st.P, move, bnd);
+    draggable(svg, velG, ()=>0, p=>{
+      const d=sub(p,st.P), l=len(d)||1;
+      st.vel={x:d.x/l*62, y:d.y/l*62}; render();
+    }, bnd);
+
+    const api={TX,NODE,BASE,overlay,overlayTop,st,inBeam,bist,fdPair,ellipseOf,ptAt,
+      get cands(){return cands;}, get arcPts(){return arcPts;}, render, range:0, fd:0};
     render();
+    return api;
+  }
+
+  /* a compact range x Doppler panel — range on X, Doppler on Y, like everywhere else */
+  function miniPlot(svg, rmax){
+    const PL={x0:70,y0:14,x1:490,y1:132};
+    const rgToX=r=>PL.x0+(clamp(r,0,rmax)/rmax)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((clamp(fd,-300,300)+300)/600)*(PL.y1-PL.y0);
+    el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},svg);
+    el('line',{x1:PL.x0,y1:fdToY(0),x2:PL.x1,y2:fdToY(0),stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
+    for(let k=0;k<=4;k++){
+      const r=rmax*k/4;
+      el('text',{x:rgToX(r),y:PL.y1+15,'text-anchor':'middle',class:'svg-annot'},svg).textContent=Math.round(r);
+    }
+    for(const fd of [-300,0,300]) el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},svg).textContent=(fd>0?'+':'')+fd;
+    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+31,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='RANGE  (km)  →  how far';
+    el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},svg).textContent='DOPPLER  (Hz)';
+    const layer=el('g',{},svg);
+    return {rgToX, fdToY, draw(dots){
+      layer.innerHTML='';
+      for(const d of dots){
+        const x=rgToX(d.r), y=fdToY(d.fd);
+        el('circle',{cx:x,cy:y,r:6,fill:d.color,stroke:'var(--surface)','stroke-width':1.5},layer);
+        el('text',{x:x,y:y-13,'text-anchor':'middle',class:'svg-annot',fill:d.color},layer).textContent=d.label;
+      }
+    }};
+  }
+
+  /* ── 5a · the arc itself, plus the single dot every candidate produces ── */
+  (function ambIntro(){
+    const svg=$('#amb-svg'); if(!svg) return;
+    const plot=$('#amb-plot');
+    const PL={x0:70,y0:14,x1:490,y1:118}, RMAX=80;
+    const rgToX=r=>PL.x0+(r/RMAX)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((fd+300)/600)*(PL.y1-PL.y0);
+    el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},plot);
+    el('line',{x1:PL.x0,y1:fdToY(0),x2:PL.x1,y2:fdToY(0),stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},plot);
+    for(const r of [0,20,40,60,80]) el('text',{x:rgToX(r),y:PL.y1+15,'text-anchor':'middle',class:'svg-annot'},plot).textContent=r;
+    for(const fd of [-300,0,300]) el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},plot).textContent=(fd>0?'+':'')+fd;
+    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+31,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},plot).textContent='RANGE  (km)  →  how far';
+    el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},plot).textContent='DOPPLER  (Hz)';
+    const dotEl=el('circle',{r:7,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},plot);
+    const dotLbl=el('text',{'text-anchor':'middle',class:'svg-annot',fill:'var(--ink-2)'},plot);
+
+    const rEl=$('#amb-range'), dEl=$('#amb-dop'), capEl=$('#amb-caption');
+    ambiguityScene(svg, {
+      title:'PLAN VIEW · THE ARC OF CANDIDATES',
+      onRender(api){
+        rEl.innerHTML=api.range.toFixed(1)+' <small>km</small>';
+        dEl.innerHTML=hzText(api.fd)+' <small>Hz</small>';
+        dEl.style.color=dopColor(api.fd);
+        const x=rgToX(clamp(api.range,0,RMAX)), y=fdToY(api.fd);
+        dotEl.setAttribute('cx',x); dotEl.setAttribute('cy',y);
+        dotLbl.setAttribute('x',x); dotLbl.setAttribute('y',y-13);
+        dotLbl.textContent='ALL '+api.cands.length+' OF THEM';
+        capEl.textContent=api.cands.length+' candidate positions drawn out of a continuous arc, every one of them '
+          +'producing '+api.range.toFixed(1)+' km and '+hzText(api.fd)+' Hz.';
+      }
+    });
   })();
 
-  /* ════════════════ MODULE 6a — ADS-B subtraction ════════════════ */
+  /* ── 5b · ADS-B: only one candidate has an aircraft reporting from it ── */
+  (function adsbMap(){
+    const svg=$('#adsb-map'); if(!svg) return;
+    const capEl=$('#adsb-caption');
+    ambiguityScene(svg, {
+      title:'PLAN VIEW · ADS-B LAID OVER THE ARC', arcLabel:'',
+      onRender(api){
+        api.overlayTop.innerHTML='';
+        // The ADS-B feed covers the whole sky, not just your beam. These are the same
+        // aircraft as the dots on the delay-Doppler plot below, put back where they
+        // physically are — and most of them were never inside the cone to begin with.
+        const FLEET=[
+          {x:437,y:118, cs:'DAL482'},
+          {x:178,y:70,  cs:'UAL77'},
+          {x:452,y:266, cs:'N512QP'},
+          {x:72, y:154, cs:'AAL63'}
+        ];
+        for(const a of FLEET){
+          const g=el('g',{transform:`translate(${a.x},${a.y})`},api.overlayTop);
+          el('circle',{r:6,fill:'var(--truth)',stroke:'var(--surface)','stroke-width':1.5},g);
+          el('circle',{r:11,fill:'none',stroke:'var(--truth)','stroke-width':1,opacity:0.45},g);
+          // known, and outside the beam — crossed off the same way as a dead candidate
+          el('path',{d:'M-10 -10 L10 10 M10 -10 L-10 10',stroke:'var(--echo)','stroke-width':2,opacity:0.9},g);
+          el('text',{x:0,y:-17,'text-anchor':'middle',class:'svg-annot',fill:'var(--truth)'},g).textContent=a.cs;
+          el('text',{x:0,y:24,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink-3)'},g).textContent='OUTSIDE THE BEAM';
+        }
+        // the sixth dot on the plot: an echo with no transponder behind it
+        const ANOM={x:322,y:240};
+        const ag=el('g',{transform:`translate(${ANOM.x},${ANOM.y})`},api.overlayTop);
+        el('circle',{r:7,fill:'var(--echo)',stroke:'var(--surface)','stroke-width':1.5},ag);
+        el('circle',{r:14,fill:'none',stroke:'var(--echo)','stroke-width':1.5,opacity:0.8},ag);
+        el('text',{x:0,y:-20,'text-anchor':'middle',class:'svg-annot',fill:'var(--echo)'},ag).textContent='NO ADS-B MATCH';
+
+        api.cands.forEach((c,i)=>{
+          const g=el('g',{transform:`translate(${c.p.x},${c.p.y})`},api.overlayTop);
+          if(c.real){
+            el('circle',{r:17,fill:'none',stroke:'var(--truth)','stroke-width':2.4},g);
+            el('circle',{r:23,fill:'none',stroke:'var(--truth)','stroke-width':1,opacity:0.5},g);
+            el('text',{x:0,y:48,'text-anchor':'middle',class:'svg-annot',fill:'var(--truth)'},g).textContent='ADS-B: SWA219 — CONFIRMED';
+          } else {
+            // the cross speaks for itself here — labelling all four collides with everything
+            el('path',{d:'M-10 -10 L10 10 M10 -10 L-10 10',stroke:'var(--echo)','stroke-width':2,opacity:0.9},g);
+          }
+        });
+        capEl.textContent='Four of the six detections belong to aircraft outside the beam entirely. Of what is left, one candidate has a transponder reporting from it, and one echo has nothing behind it at all.';
+      }
+    });
+  })();
+
+  /* ── shared: draw a second equal-range locus over the arc and mark the crossings ──
+     `focus` is the other tower or the other node; the second ellipse is the set of points
+     with the same bistatic range for that pair, so wherever it meets the arc, both
+     measurements agree. Two meetings means a real aircraft and a ghost.               */
+  function crossingOverlay(api, focus, other, color, label, readouts, labelAt, coneFrom){
+    api.overlay.innerHTML='';
+    api.overlayTop.innerHTML='';
+    const P=api.st.P;
+    // an optional second surveillance cone, in the second receiver's own colour, swung
+    // round to look at the aircraft — drawn first so the loci stay legible over it
+    if(coneFrom){
+      const CW=62, br=compass(sub(P,coneFrom)), rc=len(sub(P,coneFrom))+26;
+      const c1=uOf(br-CW/2), c2=uOf(br+CW/2);
+      const q1={x:coneFrom.x+c1.x*rc, y:coneFrom.y+c1.y*rc};
+      const q2={x:coneFrom.x+c2.x*rc, y:coneFrom.y+c2.y*rc};
+      el('path',{d:`M${coneFrom.x} ${coneFrom.y} L${q1.x} ${q1.y} A${rc} ${rc} 0 0 1 ${q2.x} ${q2.y} Z`,
+        fill:color,'fill-opacity':0.1,stroke:color,'stroke-width':1,'stroke-opacity':0.4},api.overlay);
+    }
+    // the second pair's own direct baseline — the same green idiom as tower→node in the
+    // base scene, because that is exactly what it is: the reference path this second
+    // bistatic range is measured against
+    el('line',{x1:focus.x,y1:focus.y,x2:other.x,y2:other.y,stroke:'var(--reference)','stroke-width':1.3,
+      'stroke-dasharray':'4 4',opacity:0.8},api.overlay);
+    const Rb=api.bist(P, focus, other);
+    // the second ellipse, foci `focus` and `other`
+    const c={x:(focus.x+other.x)/2, y:(focus.y+other.y)/2};
+    const f=len(sub(other,focus))/2;
+    const aa=(len(sub(P,focus))+len(sub(P,other)))/2;
+    const bb=Math.sqrt(Math.max(1,aa*aa-f*f));
+    const ang=Math.atan2(other.y-focus.y, other.x-focus.x)*180/Math.PI;
+    el('ellipse',{cx:c.x,cy:c.y,rx:aa,ry:bb,fill:'none',stroke:color,'stroke-width':1.4,
+      'stroke-dasharray':'5 4',opacity:0.85,transform:`rotate(${ang} ${c.x} ${c.y})`},api.overlay);
+    for(const [a,b] of [[focus,P],[P,other]])
+      el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:color,'stroke-width':1.1,opacity:0.45,'stroke-dasharray':'4 4'},api.overlay);
+    // walk the arc looking for sign changes in (second range − measured second range)
+    const pts=api.arcPts, hits=[];
+    let prev=null;
+    for(let i=0;i<pts.length;i++){
+      const d=api.bist(pts[i], focus, other)-Rb;
+      if(prev!==null && ((prev<0&&d>=0)||(prev>0&&d<=0))) hits.push(pts[i]);
+      prev=d;
+    }
+    if(!hits.length) hits.push(P);
+    let realHit=hits[0], bestD=1e9;
+    for(const h of hits){ const d=len(sub(h,P)); if(d<bestD){bestD=d; realHit=h;} }
+    for(const h of hits){
+      const isReal = h===realHit;
+      const g=el('g',{transform:`translate(${h.x},${h.y})`},api.overlayTop);
+      el('circle',{r:17,fill:'none',stroke:isReal?'var(--truth)':'var(--ink-3)','stroke-width':isReal?2.4:1.6,
+        'stroke-dasharray':isReal?'none':'3 3'},g);
+      el('text',{x:0,y:isReal?46:-26,'text-anchor':'middle',class:'svg-annot',fill:isReal?'var(--truth)':'var(--ink-3)'},g)
+        .textContent = isReal?'CONFIRMED':'GHOST';
+    }
+    // mark the candidates the second locus rules out
+    for(const cd of api.cands){
+      if(hits.some(h=>len(sub(h,cd.p))<20)) continue;
+      el('path',{d:'M-10 -10 L10 10 M10 -10 L-10 10',stroke:'var(--echo)','stroke-width':2,opacity:0.85,
+        transform:`translate(${cd.p.x},${cd.p.y})`},api.overlayTop);
+    }
+    const la=labelAt||{x:focus.x,y:focus.y+44};
+    el('text',{x:la.x,y:la.y,'text-anchor':'middle',class:'svg-annot',fill:color},api.overlay).textContent=label;
+    if(readouts){
+      readouts.a.innerHTML=api.range.toFixed(1)+' <small>km</small>';
+      readouts.b.innerHTML=Rb.toFixed(1)+' <small>km</small>';
+    }
+    return hits.length;
+  }
+
+  /* ── 5c · a second node's ellipse cuts the arc ── */
+  (function triMap(){
+    const svg=$('#tri-map'); if(!svg) return;
+    const capEl=$('#tri-caption');
+    const readouts={a:$('#tri-ra'), b:$('#tri-rb')};
+    const mp=$('#tri-plot') ? miniPlot($('#tri-plot'), 80) : null;
+    ambiguityScene(svg, {
+      title:'PLAN VIEW · TWO NODES, ONE TOWER',
+      nodeLabel:'NODE A', arcLabel:'',
+      onRender(api){
+        const NODEB={x:436,y:330};
+        nodeGlyphOnce(svg, NODEB, 'nodeb');
+        const n=crossingOverlay(api, api.TX, NODEB, 'var(--dop-approach)', 'TOWER → NODE B', readouts, {x:NODEB.x,y:NODEB.y+46}, NODEB);
+        if(mp) mp.draw([
+          {r:api.range, fd:api.fd, color:'var(--ink)', label:'NODE A'},
+          {r:api.bist(api.st.P, api.TX, NODEB), fd:api.fdPair(api.st.P, api.st.vel, api.TX, NODEB),
+           color:'var(--dop-approach)', label:'NODE B'}
+        ]);
+        capEl.textContent = n>1
+          ? 'Two crossings this time: a real aircraft and a mirror-image ghost. A third reading, or the antennas’ pointing, settles it.'
+          : 'One crossing, one aircraft. The arc is gone.';
+      }
+    });
+  })();
+
+  /* ── 5d · a second tower's ellipse cuts the arc ── */
+  (function multiMap(){
+    const svg=$('#multi-map'); if(!svg) return;
+    const readouts={a:$('#multi-r1'), b:$('#multi-r2')};
+    const mp=$('#multi-plot') ? miniPlot($('#multi-plot'), 80) : null;
+    ambiguityScene(svg, {
+      title:'PLAN VIEW · ONE NODE, TWO FREQUENCIES',
+      txLabel:'TOWER 1 · 97.9', arcLabel:'',
+      onRender(api){
+        const TX2={x:452,y:120};
+        towerGlyphOnce(svg, TX2, 'tx2');
+        crossingOverlay(api, TX2, api.NODE, 'var(--dop-recede)', '104.5 MHz ELLIPSE', readouts, {x:TX2.x,y:TX2.y+42});
+        if(mp) mp.draw([
+          {r:api.range, fd:api.fd, color:'var(--ink)', label:'97.9 MHz'},
+          {r:api.bist(api.st.P, TX2, api.NODE), fd:api.fdPair(api.st.P, api.st.vel, TX2, api.NODE),
+           color:'var(--dop-recede)', label:'104.5 MHz'}
+        ]);
+      }
+    });
+  })();
+  /* ════════════════ MODULE 5b — ADS-B subtraction ════════════════ */
   (function adsb(){
     const svg=$('#adsb-plot'); if(!svg) return;
     const PL={x0:70,y0:30,x1:490,y1:300};
-    const fdToX=fd=>PL.x0+(fd+300)/600*(PL.x1-PL.x0);
-    const rgToY=r=>PL.y1-(r/40)*(PL.y1-PL.y0);
+    const rgToX=r=>PL.x0+(r/40)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((fd+300)/600)*(PL.y1-PL.y0);
     el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},svg);
-    el('line',{x1:fdToX(0),y1:PL.y0,x2:fdToX(0),y2:PL.y1,stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
-    for(const fd of [-300,-150,150,300]) el('text',{x:fdToX(fd),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},svg).textContent=(fd>0?'+':'')+fd;
-    for(const r of [0,10,20,30,40]) el('text',{x:PL.x0-10,y:rgToY(r)+3,'text-anchor':'end',class:'svg-annot'},svg).textContent=r;
-    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+30,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='DOPPLER  (Hz)';
-    el('text',{x:22,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 22 ${(PL.y0+PL.y1)/2})`},svg).textContent='RANGE  (km)';
+    el('line',{x1:PL.x0,y1:fdToY(0),x2:PL.x1,y2:fdToY(0),stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},svg);
+    for(const r of [0,10,20,30,40]) el('text',{x:rgToX(r),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},svg).textContent=r;
+    for(const fd of [-300,-150,150,300]) el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},svg).textContent=(fd>0?'+':'')+fd;
+    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+30,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},svg).textContent='RANGE  (km)';
+    el('text',{x:22,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 22 ${(PL.y0+PL.y1)/2})`},svg).textContent='DOPPLER  (Hz)';
 
-    // detections: five matched to ADS-B, one anomaly
+    /* The ADS-B feed is projected onto this plane whether or not the radar is hearing
+       the aircraft: each reported position and velocity converts straight into the range
+       and Doppler it *would* land on. Four of these are outside the surveillance beam, so
+       they are predictions with no echo behind them — plotted anyway, because they are
+       exactly what you check a new detection against. Same six aircraft as the map above. */
     const dets=[
-      {fd:-210,r:31,cs:'DAL482',match:true},
-      {fd:-90,r:22,cs:'UAL77',match:true},
-      {fd:60,r:14,cs:'N512QP',match:true},
-      {fd:150,r:26,cs:'SWA219',match:true},
-      {fd:240,r:9,cs:'AAL63',match:true},
-      {fd:-40,r:6,cs:null,match:false}      // the unexplained one
+      {fd:-210,r:31,cs:'DAL482', adsb:true,  heard:false},
+      {fd:-90, r:22,cs:'UAL77',  adsb:true,  heard:false},
+      {fd:60,  r:14,cs:'N512QP', adsb:true,  heard:false},
+      {fd:150, r:26,cs:'SWA219', adsb:true,  heard:true },   // predicted AND detected → matched
+      {fd:240, r:9, cs:'AAL63',  adsb:true,  heard:false},
+      {fd:-40, r:6, cs:null,     adsb:false, heard:true }    // detected, nothing predicts it
     ];
     const g=el('g',{},svg);
-    function render(subtract){
+    function render(){
       g.innerHTML='';
       for(const d of dets){
-        const x=fdToX(d.fd), y=rgToY(d.r);
-        if(d.match){
-          if(subtract) continue;            // subtracted away
+        const x=rgToX(d.r), y=fdToY(d.fd);
+        if(d.adsb && !d.heard){
+          // ADS-B says it's there; the beam isn't pointed at it, so there's no echo
+          el('circle',{cx:x,cy:y,r:6,fill:'none',stroke:'var(--truth)','stroke-width':1.6,
+            'stroke-dasharray':'2.5 2.5',opacity:0.9},g);
+          el('text',{x:x,y:y-13,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink-3)'},g).textContent=d.cs;
+        } else if(d.adsb){
           el('circle',{cx:x,cy:y,r:6,fill:'var(--truth)',stroke:'var(--paper)','stroke-width':1.5},g);
           el('circle',{cx:x,cy:y,r:11,fill:'none',stroke:'var(--truth)','stroke-width':1,opacity:0.5},g);
-          el('text',{x:x,y:y-14,'text-anchor':'middle',class:'svg-annot'},g).textContent=d.cs;
+          el('text',{x:x,y:y-16,'text-anchor':'middle',class:'svg-annot',fill:'var(--truth)'},g).textContent=d.cs+' — MATCHED';
         } else {
           el('circle',{cx:x,cy:y,r:6,fill:'var(--echo)',stroke:'var(--paper)','stroke-width':1.5},g);
-          if(subtract){
-            el('circle',{cx:x,cy:y,r:13,fill:'none',stroke:'var(--echo)','stroke-width':1.5},g).setAttribute('opacity',0.8);
-            el('text',{x:x,y:y-16,'text-anchor':'middle',class:'svg-annot',fill:'var(--echo)'},g).textContent='NO ADS-B MATCH';
-          }
+          el('circle',{cx:x,cy:y,r:13,fill:'none',stroke:'var(--echo)','stroke-width':1.5,opacity:0.8},g);
+          el('text',{x:x,y:y-19,'text-anchor':'middle',class:'svg-annot',fill:'var(--echo)'},g).textContent='NO ADS-B MATCH';
         }
       }
     }
-    const btn=$('#adsb-sub'), cap=$('#adsb-caption');
-    let sub=false;
-    btn.addEventListener('click',()=>{
-      sub=!sub; btn.setAttribute('aria-pressed',sub);
-      cap.textContent = sub
-        ? 'Known aircraft removed. One echo has no transponder behind it: an anomaly worth a second look.'
-        : 'Six detections, five of them matched to transponder-equipped aircraft.';
-      render(sub);
-    });
-    render(false);
-  })();
-
-  /* ════════════════ MODULE 6b — two-node triangulation ════════════════ */
-  (function triangulate(){
-    const svg=$('#tri-svg'); if(!svg) return;
-    const A={x:170,y:300}, B={x:360,y:300};  // two nodes (plan view)
-    const plane={x:300,y:130};
-
-    el('line',{x1:30,y1:300,x2:490,y2:300,stroke:'var(--rule)','stroke-width':1,'stroke-dasharray':'2 6'},svg);
-    // each node's range ring is a neutral range locus (grey), like the ellipse in demo 5
-    const cA=el('circle',{cx:A.x,cy:A.y,fill:'none',stroke:'var(--ink-3)','stroke-width':1.3,'stroke-dasharray':'5 4',opacity:0.85},svg);
-    const cB=el('circle',{cx:B.x,cy:B.y,fill:'none',stroke:'var(--ink-3)','stroke-width':1.3,'stroke-dasharray':'5 4',opacity:0.85},svg);
-    // intersection markers: real fix = confirmed (teal), the other = ghost (grey outline)
-    const iReal=el('circle',{r:6,fill:'var(--truth)',stroke:'var(--paper)','stroke-width':1.5},svg);
-    const iGhost=el('circle',{r:6,fill:'none',stroke:'var(--ink-3)','stroke-width':1.5,'stroke-dasharray':'2 2'},svg);
-    const ghostLbl=el('text',{'text-anchor':'middle',class:'svg-annot'},svg); ghostLbl.textContent='GHOST';
-
-    // nodes
-    for(const [n,lbl] of [[A,'NODE A'],[B,'NODE B']]){
-      nodeGlyph(svg, n, n.y+7);
-      el('text',{x:n.x,y:n.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent=lbl;
-    }
-    const planeG=el('g',{},svg);
-    el('circle',{r:15,fill:'none',stroke:'var(--blue)','stroke-width':1.4,'stroke-dasharray':'3 3',class:'grab-ring'},planeG);
-    const planeHalo=el('circle',{r:18,opacity:0.001,fill:'var(--blue)'},planeG);
-    el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},planeG);
-    el('text',{x:0,y:-20,'text-anchor':'middle',class:'svg-annot',fill:'var(--blue-strong)'},planeG).textContent='◇ DRAG ME';
-
-    const raEl=$('#tri-ra'), rbEl=$('#tri-rb');
-    // circle-circle intersection of (A,ra) and (B,rb)
-    function intersect(ra,rb){
-      const d=len(sub(B,A)); if(d> ra+rb || d< Math.abs(ra-rb) || d===0) return null;
-      const a=(ra*ra-rb*rb+d*d)/(2*d);
-      const h2=ra*ra-a*a; if(h2<0) return null; const h=Math.sqrt(h2);
-      const m=add(A, scale(sub(B,A), a/d));
-      const off={x:-(B.y-A.y)/d*h, y:(B.x-A.x)/d*h};
-      return [add(m,off), sub(m,off)];
-    }
-    function render(){
-      const ra=len(sub(plane,A)), rb=len(sub(plane,B));
-      cA.setAttribute('r',ra); cB.setAttribute('r',rb);
-      raEl.innerHTML=(ra*KM_PER_PX).toFixed(1)+' <small>km</small>';
-      rbEl.innerHTML=(rb*KM_PER_PX).toFixed(1)+' <small>km</small>';
-      planeG.setAttribute('transform',`translate(${plane.x},${plane.y})`);
-      const pts=intersect(ra,rb);
-      if(pts){
-        // the real one is whichever is nearer the actual plane position
-        const [p,q]=pts;
-        const real = len(sub(p,plane))<len(sub(q,plane))?p:q;
-        const ghost= real===p?q:p;
-        iReal.setAttribute('cx',real.x); iReal.setAttribute('cy',real.y); iReal.setAttribute('opacity',1);
-        iGhost.setAttribute('cx',ghost.x); iGhost.setAttribute('cy',ghost.y); iGhost.setAttribute('opacity',1);
-        ghostLbl.setAttribute('x',ghost.x); ghostLbl.setAttribute('y',ghost.y-12); ghostLbl.setAttribute('opacity',1);
-      } else { iReal.setAttribute('opacity',0); iGhost.setAttribute('opacity',0); ghostLbl.setAttribute('opacity',0); }
-    }
-    draggable(svg, planeHalo, ()=>plane, p=>{plane.x=p.x;plane.y=p.y;render();}, {x0:40,x1:480,y0:30,y1:270});
     render();
   })();
 
-  /* ════════════════ MODULE 6c — multi-tower (static) ════════════════ */
-  (function multi(){
-    const svg=$('#multi-svg'); if(!svg) return;
-    const NODE={x:260,y:270};
-    const towers=[{x:70,y:250},{x:210,y:60},{x:420,y:110}];
-    const plane={x:300,y:150};
-    el('line',{x1:30,y1:300,x2:490,y2:300,stroke:'var(--rule)','stroke-width':1,'stroke-dasharray':'2 6'},svg);
-    // one node
-    nodeGlyph(svg, NODE, NODE.y+7);
-    el('text',{x:NODE.x,y:NODE.y+32,'text-anchor':'middle',class:'svg-annot'},svg).textContent='NODE';
-    towers.forEach((t,i)=>{
-      towerGlyph(svg, t, t.y+16);
-      el('text',{x:t.x,y:t.y+30,'text-anchor':'middle',class:'svg-annot'},svg).textContent='TOWER '+(i+1);
-      // illumination (blue) + echo (amber), same key as everywhere else
-      el('line',{x1:t.x,y1:t.y,x2:plane.x,y2:plane.y,stroke:'var(--blue)','stroke-width':1,opacity:0.35,'stroke-dasharray':'4 4'},svg);
-      el('line',{x1:plane.x,y1:plane.y,x2:NODE.x,y2:NODE.y,stroke:'var(--echo)','stroke-width':1,opacity:0.5},svg);
-      // each tower's equal-bistatic-range ellipse (grey), foci = tower & node
-      const c={x:(t.x+NODE.x)/2,y:(t.y+NODE.y)/2};
-      const f=len(sub(NODE,t))/2;
-      const aa=(len(sub(plane,t))+len(sub(plane,NODE)))/2;
-      const bb=Math.sqrt(Math.max(1,aa*aa-f*f));
-      const ang=Math.atan2(NODE.y-t.y,NODE.x-t.x)*180/Math.PI;
-      el('ellipse',{cx:c.x,cy:c.y,rx:aa,ry:bb,fill:'none',stroke:'var(--bistatic)','stroke-width':1,opacity:0.4,'stroke-dasharray':'3 4',transform:`rotate(${ang} ${c.x} ${c.y})`},svg);
+  /* ════════════════ MODULE 6 — draw your own flight path ════════════════
+     The capstone: the same bistatic maths as demo 3, run along a path the reader draws, gated
+     by the same steerable beam as demo 4, painted as a rolling max hold like demo 4's plot.  */
+  (function freeFlight(){
+    const map=$('#ff-map'); if(!map) return;
+    const plot=$('#ff-plot');
+    const TX={x:70,y:264}, NODE={x:270,y:264};
+    const W=520, H=300;
+    let speed=220, playing=!REDUCED, raf=null;
+
+    // ── z-order: capture surface (interactive) → decoration (inert) → beam knobs (interactive)
+    const capture=el('rect',{x:0,y:0,width:W,height:H,fill:'transparent',style:'cursor:crosshair'},map);
+    const deco=el('g',{'pointer-events':'none'},map);
+    const bg=el('g',{},deco);                       // the beam wedge lives here, behind everything
+    el('text',{x:34,y:18,class:'svg-annot'},deco).textContent='PLAN VIEW · DRAW A FLIGHT PATH';
+    const pathLine=el('path',{fill:'none',stroke:'var(--ink-3)','stroke-width':1.5,'stroke-dasharray':'5 5',opacity:0.8,'stroke-linecap':'round','stroke-linejoin':'round'},deco);
+    const heardSegG=el('g',{},deco);
+    const legTx=el('line',{stroke:'var(--blue)','stroke-width':1,opacity:0.45},deco);
+    const legNo=el('line',{stroke:'var(--echo)','stroke-width':1.2,opacity:0.6},deco);
+    towerGlyph(deco, TX, TX.y+16);
+    el('text',{x:TX.x,y:TX.y+32,'text-anchor':'middle',class:'svg-annot'},deco).textContent='TOWER';
+    nodeGlyph(deco, NODE, NODE.y+7);
+    el('text',{x:NODE.x,y:NODE.y+32,'text-anchor':'middle',class:'svg-annot'},deco).textContent='NODE';
+    const planeG=el('g',{},deco);
+    const planeIcon=el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)'},planeG);
+    const planeTag=el('text',{x:0,y:-14,'text-anchor':'middle',class:'svg-annot'},planeG);
+    const fg=el('g',{},map);
+    const beam=makeBeam(map, NODE, {bg,fg,bearing:0,beam:130,reach:260,minReach:70,maxReach:300,onChange:onBeam});
+
+    // ── plot furniture (same convention as every other plot on the page)
+    const PL={x0:70,y0:22,x1:490,y1:252};
+    const RMAX=100;                                 // this map is wide, so bistatic ranges run large
+    const rgToX=r=>PL.x0+(r/RMAX)*(PL.x1-PL.x0);
+    const fdToY=fd=>PL.y1-((fd+300)/600)*(PL.y1-PL.y0);
+    el('rect',{x:PL.x0,y:PL.y0,width:PL.x1-PL.x0,height:PL.y1-PL.y0,fill:'none',stroke:'var(--rule)','stroke-width':1},plot);
+    el('line',{x1:PL.x0,y1:fdToY(0),x2:PL.x1,y2:fdToY(0),stroke:'var(--rule-2)','stroke-width':1,'stroke-dasharray':'2 3'},plot);
+    el('text',{x:PL.x1-4,y:fdToY(0)-7,'text-anchor':'end',class:'svg-annot svg-annot-ink'},plot).textContent='0 Hz';
+    for(const r of [0,20,40,60,80,100]) el('text',{x:rgToX(r),y:PL.y1+16,'text-anchor':'middle',class:'svg-annot'},plot).textContent=r;
+    for(const fd of [-300,-150,150,300]) el('text',{x:PL.x0-10,y:fdToY(fd)+3,'text-anchor':'end',class:'svg-annot'},plot).textContent=(fd>0?'+':'')+fd;
+    el('text',{x:(PL.x0+PL.x1)/2,y:PL.y1+32,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},plot).textContent='RANGE  (km)  →  how far';
+    el('text',{x:20,y:(PL.y0+PL.y1)/2,'text-anchor':'middle',class:'svg-annot svg-annot-ink',transform:`rotate(-90 20 ${(PL.y0+PL.y1)/2})`},plot).textContent='DOPPLER  (Hz)';
+    const trailG=el('g',{},plot);
+    const headDot=el('circle',{r:5.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5,opacity:0},plot);
+    const emptyLbl=el('text',{x:(PL.x0+PL.x1)/2,y:PL.y0+34,'text-anchor':'middle',class:'svg-annot',fill:'var(--ink-3)',opacity:0},plot);
+
+    const rangeEl=$('#ff-range'), dopEl=$('#ff-dop'), heardEl=$('#ff-heard');
+
+    // ── path state
+    let pathPts=[];      // resampled to an even spacing so the plane flies at constant speed
+    let i=0;             // float index into pathPts
+    let track=[];        // {r,fd,seen} — the rolling max hold
+    const STEP=3;        // px between resampled points
+
+    function resample(pts){
+      const out=[]; if(pts.length<2) return out;
+      let carry=0;
+      out.push(pts[0]);
+      for(let k=1;k<pts.length;k++){
+        const a=pts[k-1], b=pts[k], seg=len(sub(b,a));
+        if(seg<1e-6) continue;
+        const u=unit(sub(b,a));
+        let d=STEP-carry;
+        while(d<=seg){ out.push({x:a.x+u.x*d, y:a.y+u.y*d}); d+=STEP; }
+        carry=(seg-(d-STEP));
+      }
+      return out;
+    }
+    function defaultPath(){
+      const pts=[];
+      for(let t=0;t<=1.0001;t+=0.02){
+        pts.push({x:60+t*400, y:170-78*Math.sin(Math.PI*t)-18*Math.sin(2*Math.PI*t)});
+      }
+      return pts;
+    }
+    function polyD(pts){
+      return pts.map((p,k)=>(k?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
+    }
+    // A hand-drawn path is jagged at the pixel level, and the tangent drives the Doppler, so raw
+    // points make the plotted track buzz. A couple of smoothing passes settle it without
+    // meaningfully changing the shape the reader drew.
+    function smooth(pts, passes=2){
+      let a=pts;
+      for(let n=0;n<passes;n++){
+        const out=[a[0]];
+        for(let k=1;k<a.length-1;k++){
+          out.push({x:(a[k-1].x+2*a[k].x+a[k+1].x)/4, y:(a[k-1].y+2*a[k].y+a[k+1].y)/4});
+        }
+        out.push(a[a.length-1]);
+        a=out;
+      }
+      return a;
+    }
+    function setPath(pts){
+      pathPts=smooth(resample(pts), 3);
+      i=0; track=[];
+      pathLine.setAttribute('d', polyD(pathPts));
+      paintHeardSegments();
+      draw();
+    }
+    // shade the stretches of the drawn path the beam can actually hear
+    function paintHeardSegments(){
+      heardSegG.innerHTML='';
+      let run=[];
+      for(const p of pathPts){
+        if(beam.inBeam(p)) run.push(p);
+        else { if(run.length>1) el('path',{d:polyD(run),fill:'none',stroke:'var(--blue)','stroke-width':4,opacity:0.3,'stroke-linecap':'round'},heardSegG); run=[]; }
+      }
+      if(run.length>1) el('path',{d:polyD(run),fill:'none',stroke:'var(--blue)','stroke-width':4,opacity:0.3,'stroke-linecap':'round'},heardSegG);
+    }
+
+    function measure(P,T){
+      const range=(len(sub(P,TX))+len(sub(P,NODE))-len(sub(NODE,TX)))*KM_PER_PX;
+      const uTx=unit(sub(P,TX)), uNo=unit(sub(P,NODE));
+      const fd=clamp(-(speed/LAMBDA)*dot(unit(T), add(uTx,uNo)), -300, 300);
+      return {r:clamp(range,0,RMAX), fd, seen:beam.inBeam(P)};
+    }
+    function tangentAt(k){
+      const n=pathPts.length, w=3;             // wide window keeps the heading steady
+      const a=pathPts[Math.max(0,k-w)], b=pathPts[Math.min(n-1,k+w)];
+      const t=sub(b,a);
+      return (t.x||t.y)?t:{x:1,y:0};
+    }
+    function draw(){
+      trailG.innerHTML='';
+      for(let k=1;k<track.length;k++){
+        const A=track[k-1], B=track[k];
+        if(!A.seen||!B.seen) continue;
+        el('line',{x1:rgToX(A.r),y1:fdToY(A.fd),x2:rgToX(B.r),y2:fdToY(B.fd),
+          stroke:dopColor(B.fd),'stroke-width':3,'stroke-linecap':'round',opacity:0.85},trailG);
+      }
+      const h=track[track.length-1];
+      if(h&&h.seen){ headDot.setAttribute('cx',rgToX(h.r)); headDot.setAttribute('cy',fdToY(h.fd)); headDot.setAttribute('opacity',1); }
+      else headDot.setAttribute('opacity',0);
+      const nothing = pathPts.length<2 ? 'DRAW A PATH ON THE MAP ABOVE'
+                    : (track.length>6 && !track.some(p=>p.seen)) ? 'THE PATH NEVER ENTERS THE BEAM — NOTHING TO PLOT' : '';
+      emptyLbl.textContent=nothing; emptyLbl.setAttribute('opacity', nothing?1:0);
+    }
+    function updatePlane(){
+      if(pathPts.length<2){
+        planeG.setAttribute('opacity',0); legTx.setAttribute('opacity',0); legNo.setAttribute('opacity',0);
+        rangeEl.innerHTML='– <small>km</small>'; dopEl.innerHTML='– <small>Hz</small>';
+        dopEl.style.color='var(--ink-3)';
+        heardEl.textContent='no path'; heardEl.style.color='var(--ink-3)';
+        return;
+      }
+      planeG.setAttribute('opacity',1);
+      const k=Math.min(pathPts.length-1, Math.floor(i));
+      const P=pathPts[k], T=tangentAt(k), m=measure(P,T);
+      planeG.setAttribute('transform',`translate(${P.x},${P.y})`);
+      planeIcon.setAttribute('transform',`rotate(${Math.atan2(T.y,T.x)*180/Math.PI})`);
+      planeIcon.setAttribute('fill', m.seen?'var(--truth)':'var(--ink)');
+      planeTag.setAttribute('fill', m.seen?'var(--truth)':'var(--ink-3)');
+      planeTag.textContent = m.seen?'HEARD':'NOT HEARD';
+      legTx.setAttribute('x1',TX.x); legTx.setAttribute('y1',TX.y); legTx.setAttribute('x2',P.x); legTx.setAttribute('y2',P.y);
+      legNo.setAttribute('x1',P.x); legNo.setAttribute('y1',P.y); legNo.setAttribute('x2',NODE.x); legNo.setAttribute('y2',NODE.y);
+      legTx.setAttribute('opacity',m.seen?0.45:0.12); legNo.setAttribute('opacity',m.seen?0.6:0.12);
+      if(m.seen){
+        rangeEl.innerHTML=m.r.toFixed(1)+' <small>km</small>';
+        dopEl.innerHTML=hzText(m.fd)+' <small>Hz</small>';
+        dopEl.style.color=dopColor(m.fd);
+        heardEl.textContent='detecting'; heardEl.style.color='var(--truth)';
+      } else {
+        rangeEl.innerHTML='– <small>km</small>'; dopEl.innerHTML='– <small>Hz</small>';
+        dopEl.style.color='var(--ink-3)';
+        heardEl.textContent='deaf'; heardEl.style.color='var(--ink-3)';
+      }
+      return m;
+    }
+    function onBeam(){
+      if(!pathPts.length) return;
+      paintHeardSegments();
+      // re-test every stored sample against the new beam
+      for(let k=0;k<track.length;k++){
+        const idx=track[k].k;
+        if(idx!=null && pathPts[idx]) track[k].seen=beam.inBeam(pathPts[idx]);
+      }
+      updatePlane(); draw();
+    }
+    function step(dt){
+      if(pathPts.length<2) return;
+      i += speed*0.55*dt/STEP;               // 0.55 px of map per m/s per second, then → indices
+      if(i>=pathPts.length){ i=0; track=[]; }
+      const k=Math.floor(i);
+      const m=measure(pathPts[k], tangentAt(k));
+      m.k=k;
+      track.push(m);
+      if(track.length>pathPts.length) track.shift();
+    }
+    function loop(now){
+      const dt=Math.min(0.05,(now-(loop._p||now))/1000); loop._p=now;
+      if(playing && pathPts.length>1){ step(dt); updatePlane(); draw(); }
+      raf=requestAnimationFrame(loop);
+    }
+
+    // ── drawing a new path
+    let drawing=false, drawPts=[];
+    const clampP=p=>({x:clamp(p.x,6,W-6), y:clamp(p.y,22,H-30)});
+    capture.addEventListener('pointerdown',e=>{
+      drawing=true; drawPts=[clampP(toSvg(map,e))];
+      pathLine.setAttribute('stroke','var(--blue-strong)');
+      heardSegG.innerHTML='';
+      e.preventDefault();
     });
-    const pg=el('g',{},svg);
-    el('path',{d:'M-9 -4 L9 0 L-9 4 L-4 0 Z',fill:'var(--ink)',transform:'rotate(20)'},pg);
-    el('circle',{cx:0,cy:0,r:13,fill:'none',stroke:'var(--ink)','stroke-width':1,opacity:0.4},pg);
-    el('text',{x:0,y:-16,'text-anchor':'middle',class:'svg-annot svg-annot-ink'},pg).textContent='FIXED HERE';
-    pg.setAttribute('transform',`translate(${plane.x},${plane.y})`);
+    window.addEventListener('pointermove',e=>{
+      if(!drawing) return;
+      const p=clampP(toSvg(map,e));
+      if(len(sub(p,drawPts[drawPts.length-1]))>4){ drawPts.push(p); pathLine.setAttribute('d',polyD(drawPts)); }
+    });
+    window.addEventListener('pointerup',()=>{
+      if(!drawing) return;
+      drawing=false;
+      pathLine.setAttribute('stroke','var(--ink-3)');
+      if(drawPts.length>2) setPath(drawPts);
+      else { pathLine.setAttribute('d',polyD(pathPts)); paintHeardSegments(); }
+    });
+
+    $('#ff-speed').addEventListener('input',e=>{ speed=+e.target.value; $('#ff-speed-v').textContent=speed+' m/s'; });
+    const playBtn=$('#ff-play');
+    playBtn.addEventListener('click',()=>{
+      playing=!playing; playBtn.setAttribute('aria-pressed',playing);
+      playBtn.textContent = playing?'❚❚ Pause':'▶ Play';
+      if(playing){ i=0; track=[]; }
+    });
+    $('#ff-clear').addEventListener('click',()=>{
+      pathPts=[]; track=[]; i=0;
+      pathLine.setAttribute('d',''); heardSegG.innerHTML='';
+      updatePlane(); draw();
+    });
+    $('#ff-reset-beam').addEventListener('click',()=>{
+      beam.bearing=0; beam.beam=130; beam.reach=260; beam.render(); onBeam();
+    });
+
+    setPath(defaultPath());
+    if(REDUCED){
+      playing=false; playBtn.setAttribute('aria-pressed',false); playBtn.textContent='▶ Play';
+      track=pathPts.map((p,k)=>{ const m=measure(p,tangentAt(k)); m.k=k; return m; });
+      updatePlane(); draw();
+    } else {
+      updatePlane();
+      raf=requestAnimationFrame(loop);
+    }
   })();
 
-  /* ════════════════ tabs (module 6) ════════════════ */
+  /* ════════════════ tabs (module 5) ════════════════ */
   (function tabs(){
     const tabs=[...document.querySelectorAll('.tab')];
-    const panels={adsb:$('#tab-adsb'), tri:$('#tab-tri'), multi:$('#tab-multi')};
+    const panels={problem:$('#tab-problem'), adsb:$('#tab-adsb'), tri:$('#tab-tri'), multi:$('#tab-multi')};
     tabs.forEach(t=>t.addEventListener('click',()=>{
       tabs.forEach(x=>x.setAttribute('aria-selected', x===t));
       for(const k in panels) panels[k].classList.toggle('active', k===t.dataset.tab);
